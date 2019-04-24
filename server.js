@@ -4,21 +4,33 @@ import bodyParser from 'body-parser';
 import express from 'express';
 
 //App imports 
+import getMongooseConnection from './databases/mongo'
 import loadRoutes from './routes';
 
 //INIT______________________________
 dotenv.config();
-const app = express();
 const port = process.env.EXPRESS_PORT;
+const app = express();
 
-//Public file serve
 app.use('/public', express.static(process.env.PUBLIC_PATH))
-
-//Common Middleware 
 app.use(bodyParser());
-
 //API endpoints routing
 loadRoutes(app);
 
-//Server Start 
-app.listen(port, () => console.log(`ITS ALIVE!! Server running at port ${port}`));
+
+/**
+* Establish db connection before intializing the server
+*/
+(async function init() {
+  try {
+    await getMongooseConnection();
+  } catch (e) {
+    console.error(e);
+    process.exit(1);
+  }
+
+  const port = 3000;
+  app.listen(port, () => {
+    console.log(`ITS ALIVE!! Server running at port ${port}`);
+  });
+})()

@@ -9,7 +9,7 @@ import Joi from 'joi';
 
 export default async function validateFormSchema(req, res, next) {
   const schema = {
-    name: Joi.string().required(),
+    name: Joi.string(),
     email: Joi.string().email({ minDomainAtoms: 2 }),
     password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/),
   };
@@ -17,7 +17,7 @@ export default async function validateFormSchema(req, res, next) {
     await Joi.validate(req.body, schema)
   }
   catch (e) {
-    console.log('Invalid req.body')
+    console.log('Invalid data in req.body')
     return res.status(400).send()
   }
   console.log('1. Validated Input schema via middleware')

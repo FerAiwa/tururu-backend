@@ -11,11 +11,10 @@ export default async function createAccount(req, res) {
   try {
     const newUser = await generateUser(formData);
     await accountService.insertNewUser(newUser);
-    const verificationCode = await accountService.addVerificationCode(newUser._id);
-    await emailService.sendEmailRegistration(newUser.email, verificationCode);
+    await emailService.sendEmailRegistration(newUser.email, newUser.verification_code);
+    return res.status(201).send();
   }
   catch (e) {
     return res.status(500).send(e.message)
   }
-  return res.status(201).send();
 }

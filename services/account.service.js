@@ -1,78 +1,73 @@
 'use strict';
-import mongodb from 'mongodb';
-import Mongoose from 'mongoose';
 import uuiV4 from 'uuidv4';
-import { accountSchemas } from './schemas';
+import { accountModels } from './schemas';
 
 //UTILS _________________________________________________________________
 const hashpassword = (password) => bcrypt.hash(password, 10);
+
 //Replaces the first T, to be properly stored in SQL date format (UTC)
 const getNormalizedNowDate = () => new Date().toISOString().substring(0, 19).replace('T', ' ');
 
-const User = Mongoose.model('User');
-const Verification = Mongoose.model('Verification');
-
-async function getConnection() {
-  const mongoURI = `mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`;
-  return Mongoose.connect(mongoURI, { useNewUrlParser: true, poolSize: 10 });
+function getHourDiference(date1) {
+  const date = date1.replace(" ", "T") + "Z";
+  const hourDiff = (new Date() - new Date(date)) / (1000 * 60 * 60)
+  return hourDiff
 }
 
 async function insertNewUser(user) {
-  try {
-    const connection = await getConnection();
-    // const User = Mongoose.model('User');
-    //const User = connection.model('User', accountSchemas.user, 'users');
-    const newUser = new User(user);
-    newUser.save();
-    return newUser._id
-  } catch (e) {
-    return res.status(500).send(e.message);
-  }
+  const newUser = new accountModels.User(user);
+  await newUser.save();
+  console.log('Inserted user', newUser)
+  return newUser._id
 }
 
-async function confirmUser(id) {
-  try {
-    const connection = await getConnection();
-    //const User = connection.model('User', accountSchemas.user, 'users');
-    return User.findByIdAndUpdate({ _id: id }, { verificated_at: getNormalizedNowDate() });
-  }
-  catch (e) {
-    return res.status(500).send(e.message)
-  }
+async function getUserByVerificationCode(verification_code) {
+  return await accountModels.User.findOne({ verification_code });
+}
+async function getUserByEmail(email) {
+  const user = await accountModels.User.findOne({ email });
+  return user;
 }
 
-async function addVerificationCode(userId) {
-  try {
-    const connection = await getConnection();
-    // const Verification = Mongoose.model('Verification');
-    //const Verification = connection.model('Verification', accountSchemas.verification, 'users_activation');
-    const newVerification = new Verification({
-      user_uuid: userId,
-      verification_code: uuiV4(),
-      created_at: getNormalizedNowDate()
-    });
-    newVerification.save()
-    return newVerification.verification_code
-  } catch (e) {
-    return res.status(500).send(e.message);
+
+async function activateAccount(userId) {
+  const updateQuery = {
+    verificated_at: getNormalizedNowDate(),
+    $unset: { verification_code: "", generated_at: "" }
   }
+  return await accountModels.User.findByIdAndUpdate(userId, updateQuery, { new: true })
 }
 
-async function findVerificationRegister(verification_code) {
-  try {
-    const connection = await getConnection();
-    // const Verification = Mongoose.model('Verification');
-    //const Verification = connection.model('Verification', accountSchemas.verification, 'users_activation');
-    return Verification.findOne({ verification_code });
-  }
-  catch (e) {
-    return res.status(500).send(e.message);
-  }
+//Check unhappy path: +24h since validation code creation || not found
+async function isVerificationCodeValid(generationDate) {
+  return getHourDiference(generationDate) <= 24
+}
+
+async function resetVerificationCode(userId) {
+  const updateQuery = {
+    verificated_at: null,
+    verification_code: uuiV4(),
+    generated_at: getNormalizedNowDate()
+  };
+  const user = await accountModels.User.findByIdAndUpdate(userId, updateQuery, { new: true });
+  return user.verification_code
+}
+
+async function saveLoginAttempts(email) {
+  await accountModels.User.findOneAndUpdate({ email }, { $inc: { login_attempts: 1 } });
+}
+
+async function tempBanUserLogin(email, time) {
+  await accountModels.User.findOneAndUpdate({ email }, { login_block_time: time })
 }
 
 export const accountService = {
-  addVerificationCode,
-  confirmUser,
-  findVerificationRegister,
+  activateAccount,
+  getUserByVerificationCode,
+  getUserByEmail,
   insertNewUser,
+  isVerificationCodeValid,
+  resetVerificationCode,
+  saveLoginAttempts,
+  tempBanUserLogin,
 }

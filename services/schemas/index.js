@@ -1,8 +1,6 @@
-import { userSchema } from './user';
-import { verificationSchema } from './verification-code';
+import { User } from './user';
 
-export const accountSchemas = {
-  user: userSchema,
-  verification: verificationSchema,
+export const accountModels = {
+  User,
 }
 

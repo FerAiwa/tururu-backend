@@ -15,6 +15,8 @@ export default async function generateUser({ name, password, email }) {
     name,
     email,
     password: await hashpassword(password),
-    created_at: getNormalizedNowDate()
+    created_at: getNormalizedNowDate(),
+    verification_code: uuiV4(),
+    generated_at: getNormalizedNowDate(),
   }
 }

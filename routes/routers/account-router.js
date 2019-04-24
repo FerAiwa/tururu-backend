@@ -13,6 +13,7 @@ router.route("/activate")
 
 router
   .route("/login")
+  .post(validateFormSchema, accountController.login)
 
 router
   .route("/logout")
