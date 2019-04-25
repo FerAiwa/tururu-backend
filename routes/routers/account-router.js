@@ -1,12 +1,13 @@
 'use strict';
 import express from 'express';
 import { accountController } from '../controllers';
+import checkWebtoken from '../middlewares/checkWebtoken';
 import validateFormSchema from '../middlewares/validateFormSchema';
 
 const router = express.Router();
 
 //Root of /account
-router.route('/')
+router.get('/', checkWebtoken, (req, res) => res.send('welcome to tijuana, tequila sexo y marihuana!'))
 
 router.route("/activate")
   .get(accountController.activateAccount)

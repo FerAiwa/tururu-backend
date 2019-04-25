@@ -8,6 +8,7 @@ import Joi from 'joi';
  */
 
 export default async function validateFormSchema(req, res, next) {
+  console.log(req.body)
   const schema = {
     name: Joi.string(),
     email: Joi.string().email({ minDomainAtoms: 2 }),
