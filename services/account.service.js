@@ -1,73 +1,92 @@
-'use strict';
 import uuiV4 from 'uuidv4';
-import { accountModels } from './schemas';
+import { User } from '../databases/schemas';
 
-//UTILS _________________________________________________________________
-const hashpassword = (password) => bcrypt.hash(password, 10);
 
-//Replaces the first T, to be properly stored in SQL date format (UTC)
+// UTILS _________________________________________________________________
+// const hashpassword = (password) => bcrypt.hash(password, 10);
+
+// Replaces the first T, to be properly stored in SQL date format (UTC)
 const getNormalizedNowDate = () => new Date().toISOString().substring(0, 19).replace('T', ' ');
 
 function getHourDiference(date1) {
-  const date = date1.replace(" ", "T") + "Z";
-  const hourDiff = (new Date() - new Date(date)) / (1000 * 60 * 60)
-  return hourDiff
+  const date = date1.replace(' ', 'T').concat('Z');
+  const hourDiff = (new Date() - new Date(date)) / (1000 * 60 * 60);
+  return hourDiff;
 }
 
-async function insertNewUser(user) {
-  const newUser = new accountModels.User(user);
-  await newUser.save();
-  console.log('Inserted user', newUser)
-  return newUser._id
+/** Insert a new user in the database
+* @returns {String} User uuid
+*/
+async function saveNewUser(user) {
+  const newUser = await User.create(user);
+  console.log('Inserted user', newUser);
+  return newUser.uuid;
 }
 
-async function getUserByVerificationCode(verification_code) {
-  return await accountModels.User.findOne({ verification_code });
+/**
+ *  @returns {Promise} Verification code
+*/
+async function getUserByVerificationCode(verificationCode) {
+  return User.findOne({ verificationCode });
 }
+
 async function getUserByEmail(email) {
-  const user = await accountModels.User.findOne({ email });
+  const user = await User.findOne({ email });
   return user;
 }
 
-
-async function activateAccount(userId) {
+/**
+ * @returns {Promise<{}>} User
+ * */
+async function activateUserAccount(uuid) {
   const updateQuery = {
-    verificated_at: getNormalizedNowDate(),
-    $unset: { verification_code: "", generated_at: "" }
-  }
-  return await accountModels.User.findByIdAndUpdate(userId, updateQuery, { new: true })
+    verificatedAt: getNormalizedNowDate(),
+    $unset: { verificationCode: '', generatedAt: '' },
+  };
+  return User.findOneAndUpdate({ uuid }, updateQuery, { new: true });
+}
+/**
+ * @returns {Boolean}
+ */
+function isVerificationCodeValid(generationDate) {
+  return getHourDiference(generationDate) <= 24;
 }
 
-//Check unhappy path: +24h since validation code creation || not found
-async function isVerificationCodeValid(generationDate) {
-  return getHourDiference(generationDate) <= 24
-}
-
+/**
+ * @returns {String} New verification code
+ */
 async function resetVerificationCode(userId) {
   const updateQuery = {
     verificated_at: null,
-    verification_code: uuiV4(),
-    generated_at: getNormalizedNowDate()
+    verificationCode: uuiV4(),
+    generatedAt: getNormalizedNowDate()
   };
-  const user = await accountModels.User.findByIdAndUpdate(userId, updateQuery, { new: true });
-  return user.verification_code
+  const user = await User.findByIdAndUpdate(userId, updateQuery, { new: true });
+  return user.verificationCode;
 }
 
-async function saveLoginAttempts(email) {
-  await accountModels.User.findOneAndUpdate({ email }, { $inc: { login_attempts: 1 } });
+
+// SECURITY ___________________________________________________________________________
+async function saveLoginAttempts(uuid) {
+  await User.findOneAndUpdate({ uuid }, { $inc: { loginAttempts: 1 } });
 }
 
-async function tempBanUserLogin(email, time) {
-  await accountModels.User.findOneAndUpdate({ email }, { login_block_time: time })
+async function resetLoginAttempts(uuid) {
+  await User.findOneAndUpdate({ uuid }, { $set: { loginAttempts: 0 } });
 }
 
-export const accountService = {
-  activateAccount,
+async function tempBanUserLogin(uuid, time) {
+  await User.findOneAndUpdate({ uuid }, { loginBlockTime: time });
+}
+
+export default {
+  activateUserAccount,
   getUserByVerificationCode,
   getUserByEmail,
-  insertNewUser,
   isVerificationCodeValid,
   resetVerificationCode,
+  resetLoginAttempts,
   saveLoginAttempts,
+  saveNewUser,
   tempBanUserLogin,
-}
+};

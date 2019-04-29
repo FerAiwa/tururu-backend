@@ -1,14 +1,16 @@
-'use strict';
 import accountRouter from './routers/account-router';
+import projectsRouter from './routers/projects-router';
 import templateRouter from './routers/template-router';
 
+
 /** Set all the api routes for the app
- * @param  app 
+ * @param  app
  */
 export default function loadRouters(app) {
   [
     { path: '/account', router: accountRouter },
+    { path: '/projects', router: projectsRouter },
     { path: '/template', router: templateRouter },
   ]
-    .forEach(route => app.use(route.path, route.router))
+    .forEach(route => app.use(route.path, route.router));
 }

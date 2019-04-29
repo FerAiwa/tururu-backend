@@ -7,7 +7,7 @@ import express from 'express';
 
 //App imports 
 import getMongooseConnection from './databases/mongo'
-import loadRoutes from './routes';
+import loadRoutes from './routes/routes';
 
 //INIT______________________________
 dotenv.config();
@@ -39,11 +39,9 @@ loadRoutes(app);
   try {
     await getMongooseConnection();
   } catch (e) {
-    console.error(e);
+    console.error('Server couldn´t connect to db');
     process.exit(1);
   }
-
-  const port = 3000;
   app.listen(port, () => {
     console.log(`ITS ALIVE!! Server running at port ${port}`);
   });

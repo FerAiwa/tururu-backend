@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { accountService } from "../../../services/account.service";
+import accountService from '../../../services/account.service';
 import { emailService } from '../../../services/email.service';
 
 /** Check user access conditions. Email and password must be sent in req.body
@@ -8,71 +8,36 @@ import { emailService } from '../../../services/email.service';
  */
 export default async function login(req, res) {
   const { email, password } = req.body;
-
   try {
-    if (req.headers.authorization) {
-      //[💩#0] User is already logged and has a token.
-      //TODO- From base64 to object, and use user uuid to redirect to the user profile
-      return res.redirect('/template')
-    }
     const user = await accountService.getUserByEmail(email);
-    if (isUserBanned(user)) {
-      //[💩#1] User is banned
-      return res.status(401).send(e.message)
+
+    const unbanDate = user.loginBlockTime;
+    if (unbanDate && unbanDate < Date.now()) {
+      // [💩#1] User is banned
+      return res.status(401).send(`Account blocked until ${unbanDate.toLocaleString()}`);
     }
-    if (!isVerificated(user)) {
-      //[💩#2] User tried to login before using activation code
+    if (!user.verificatedAt) {
+      // [💩#2] User tried to login before using activation code
       const newCode = await accountService.resetVerificationCode(user._id);
       emailService.sendEmailRegistration(user.email, newCode);
-      //Alternativa: stand-alone page con notificacion + 'resend verification-code'
-      return res.status(401).send(e.message)
+      return res.status(401).send('You can´t login until you verify your account. A new verification code was sent to your email.');
     }
-    if (user.login_attempts >= 5) {
-      //[💩#3] Repeated login attempts. Is user using brute force?
-      accountService.tempBanUserLogin(email, 30);
-      return res.status(429).send('Reached limit attempts. Account blocked for 30 minutes!')
+    if (user.loginAttempts >= 5) {
+      // [💩#3] Repeated login attempts. Is user trying brute force?
+      accountService.tempBanUserLogin(user.uuid, 30); // todo: use env to set the ban time?
+      return res.status(429).send('Reached limit login attempts. Account blocked for 30 minutes!');
     }
-    if (await isDiferentPassword(password, user.password)) {
-      //[💩#4] User forgot password
-      //TODO - Offer a forgot/reset password link!
-      accountService.saveLoginAttempts(user.email);
-      return res.status(401).send(e.message)
+    const isSamePassword = await bcrypt.compare(password, user.password);
+    if (!isSamePassword) {
+      // [💩#4] User forgot password. TODO - Offer a forgot/reset password link!
+      accountService.saveLoginAttempts(user.uuid);
+      return res.status(401).send('Invalid password');
     }
-    //[👌] Give the user a 1h webtoken, login and update audit fields
-    //TODO - Reset login attempts
-    const webtoken1h = getJSONWebtoken({ _id: user._id });
-    return res.json(webtoken1h)
-  }
-  catch (e) {
-    //[💩#5] Can´t find account
-    return res.status(500).send(e.message)
-  }
-}
-
-function getJSONWebtoken(payload) {
-  return jwt.sign(payload, process.env.WEBTOKEN_SECRET, { expiresIn: '1h' })
-}
-
-
-async function isDiferentPassword(given, stored) {
-  const validation = await bcrypt.compare(given, stored);
-  if (!validation) throw new Error('Invalid password')
-}
-
-function isVerificated(user) {
-  if (!user.verificated_at) throw new Error(
-    'You can´t login until you verify your account. A new verification code was sent to your email.'
-  )
-  return true
-}
-
-// WORKING AT THIS -->
-function isUserBanned(user) {
-  if (!user.login_block_time) return false;
-  const banMinutesLeft = 3//Math.round((user.login_block_time - new Date()) * 1000 * 60)
-  if (banMinutesLeft > 0) {
-    throw new Error(
-      `Reached maximun login attempts. Account blocked for ${banMinutesLeft} minutes. Please, wait.`
-    )
+    // [👌] Give the user a 1h webtoken, and reset login attempts
+    const webtoken1h = jwt.sign({ uuid: user.uuid }, process.env.WEBTOKEN_SECRET, { expiresIn: '1h' });
+    if (user.loginAttempts) accountService.resetLoginAttempts(user.uuid);
+    return res.json(webtoken1h);
+  } catch (e) {
+    return res.status(500).send(e.message);
   }
 }

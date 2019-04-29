@@ -1,26 +1,25 @@
-'use strict';
 import express from 'express';
-import { accountController } from '../controllers';
+import * as accountController from '../controllers/account';
 import checkWebtoken from '../middlewares/checkWebtoken';
 import validateFormSchema from '../middlewares/validateFormSchema';
 
 const router = express.Router();
 
-//Root of /account
-router.get('/', checkWebtoken, (req, res) => res.send('welcome to tijuana, tequila sexo y marihuana!'))
+// Root of /account
+router.get('/', checkWebtoken, (req, res) => res.send('welcome to tijuana, tequila sexo y marihuana!'));
 
-router.route("/activate")
-  .get(accountController.activateAccount)
-
-router
-  .route("/login")
-  .post(validateFormSchema, accountController.login)
+router.route('/activate')
+  .get(accountController.activateAccount);
 
 router
-  .route("/logout")
+  .route('/login')
+  .post(validateFormSchema, accountController.login);
 
 router
-  .route("/signup")
-  .post(validateFormSchema, accountController.createAccount)
+  .route('/logout');
+
+router
+  .route('/signup')
+  .post(validateFormSchema, accountController.createAccount);
 
 export default router;
