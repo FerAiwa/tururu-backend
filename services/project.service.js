@@ -2,12 +2,6 @@ import Project from '../databases/schemas/project';
 import { User } from '../databases/schemas';
 
 async function getUserProjects(uuid) {
-  // A. Populate version
-  /*   return User.findOne({ uuid }).populate({
-      path: 'projects',
-      populate: { path: 'projects' },
-    }); */
-  // B. Find from projects using the user uuid.
   return Project.find({ users: uuid });
 }
 
@@ -19,8 +13,16 @@ async function saveNewProject(projectData) {
   return Project.create(projectData);
 }
 
+async function addTasksToProject(uuid, projectId, taskData) {
+  // user must be included in admins to procceed.
+  const query = { _id: projectId, admins: uuid };
+  const op = { $push: { tasks: [...taskData] } };
+  return Project.findOneAndUpdate(query, op, { new: true });
+}
+
 export default {
   addProjectIdToUser,
+  addTasksToProject,
   getUserProjects,
   saveNewProject,
 };

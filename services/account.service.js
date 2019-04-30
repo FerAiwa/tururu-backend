@@ -59,7 +59,7 @@ async function resetVerificationCode(userId) {
   const updateQuery = {
     verificated_at: null,
     verificationCode: uuiV4(),
-    generatedAt: getNormalizedNowDate()
+    generatedAt: getNormalizedNowDate(),
   };
   const user = await User.findByIdAndUpdate(userId, updateQuery, { new: true });
   return user.verificationCode;
