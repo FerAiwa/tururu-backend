@@ -6,7 +6,7 @@ import { emailService } from '../../../services/email.service';
 async function createAccount(req, res) {
   const formData = req.body;
   try {
-    const newUser = await generateUser(formData);
+    const newUser = await generateUser(formData); // Mover a account
     await accountService.saveNewUser(newUser);
     await emailService.sendEmailRegistration(newUser.email, newUser.verificationCode);
     return res.status(201).send();

@@ -1,9 +1,9 @@
-import projectService from '../../../services/project.service';
+import accountService from '../../../services/account.service';
 
 async function getUserProjects(req, res) {
   try {
     const { uuid } = req.claims;
-    const projects = await projectService.getUserProjects(uuid);
+    const projects = await accountService.getUserProjects(uuid);
     return res.status(200).json(projects);
   } catch (e) {
     console.log(e.message);

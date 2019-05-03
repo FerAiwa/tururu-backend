@@ -12,11 +12,10 @@ const userSchema = new Schema({
   generatedAt: String,
   // Audit
   loginAttempts: { type: Number, default: 0 },
-  loginBlockTime: { type: String, default: '' },
+  unbanDate: { type: Date, default: null },
   // last_login: String,
   projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
 });
 
 const User = model('User', userSchema, 'users');
-
 export default User;

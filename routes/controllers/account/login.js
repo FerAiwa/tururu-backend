@@ -1,3 +1,4 @@
+/* eslint no-use-before-define: ["error", { "functions": false } ] */
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import accountService from '../../../services/account.service';
@@ -6,38 +7,65 @@ import { emailService } from '../../../services/email.service';
 /** Check user access conditions. Email and password must be sent in req.body
  * @res JSON Webtoken valid for 1h, if everything is ok.
  */
-export default async function login(req, res) {
+async function login(req, res, next) {
   const { email, password } = req.body;
   try {
     const user = await accountService.getUserByEmail(email);
+    // If the check fails, triggers logic and throws loginErr
+    checkBan(user);
+    await checkAccountVerification(user);
+    await checkLimitAttempts(user);
+    await comparePasswords(password, user);
 
-    const unbanDate = user.loginBlockTime;
-    if (unbanDate && unbanDate < Date.now()) {
-      // [💩#1] User is banned
-      return res.status(401).send(`Account blocked until ${unbanDate.toLocaleString()}`);
-    }
-    if (!user.verificatedAt) {
-      // [💩#2] User tried to login before using activation code
-      const newCode = await accountService.resetVerificationCode(user._id);
-      emailService.sendEmailRegistration(user.email, newCode);
-      return res.status(401).send('You can´t login until you verify your account. A new verification code was sent to your email.');
-    }
-    if (user.loginAttempts >= 5) {
-      // [💩#3] Repeated login attempts. Is user trying brute force?
-      accountService.tempBanUserLogin(user.uuid, 30); // todo: use env to set the ban time?
-      return res.status(429).send('Reached limit login attempts. Account blocked for 30 minutes!');
-    }
-    const isSamePassword = await bcrypt.compare(password, user.password);
-    if (!isSamePassword) {
-      // [💩#4] User forgot password. TODO - Offer a forgot/reset password link!
-      accountService.saveLoginAttempts(user.uuid);
-      return res.status(401).send('Invalid password');
-    }
-    // [👌] Give the user a 1h webtoken, and reset login attempts
-    const webtoken1h = jwt.sign({ uuid: user.uuid }, process.env.WEBTOKEN_SECRET, { expiresIn: '1h' });
+    // [👌] Give the user a 1h token & reset login attempts
+    const token = getToken(user.uuid);
     if (user.loginAttempts) accountService.resetLoginAttempts(user.uuid);
-    return res.json(webtoken1h);
+    return res.status(200).json({ accessToken: token, expiresIn: '1h' });
   } catch (e) {
-    return res.status(500).send(e.message);
+    return next(e); // err sent to account error handler
   }
 }
+
+class CustomErr extends Error {
+  constructor(code, message, source) {
+    super();
+    this.code = code;
+    this.message = message;
+    this.source = source;
+  }
+}
+
+const loginErr = (code, message) => new CustomErr(code, message, 'login');
+
+
+function checkBan({ unbanDate }) {
+  if (unbanDate && unbanDate < Date.now()) {
+    throw loginErr('USERBAN', `Account blocked until  ${unbanDate.toLocaleString()}`);
+  }
+}
+async function checkAccountVerification({ uuid, email, verificatedAt }) {
+  if (!verificatedAt) {
+    const newCode = await accountService.resetVerificationCode(uuid);
+    emailService.sendEmailRegistration(email, newCode);
+    throw loginErr('NOCODE', 'You can´t login until you verify your account. A new verification code was sent to your email.');
+  }
+}
+async function checkLimitAttempts({ uuid, loginAttempts }) {
+  if (loginAttempts >= 5) {
+    accountService.tempBanUserLogin(uuid, 30); // todo: use env to set the ban time?
+    throw loginErr('MAXPWD', 'Reached limit login attempts. Account blocked for 30 minutes!');
+  }
+}
+async function comparePasswords(given, user) {
+  const { uuid, loginAttempts } = user;
+  if (!await bcrypt.compare(given, user.password)) {
+    accountService.saveLoginAttempts(uuid);
+    const attemptsLeft = 4 - loginAttempts;
+    throw loginErr('BADPWD', `Invalid password. You have ${attemptsLeft} attempts before your account is suspended.`);
+  }
+}
+function getToken(uuid) {
+  return jwt.sign({ uuid }, process.env.WEBTOKEN_SECRET, { expiresIn: '1h' });
+}
+
+export default login;

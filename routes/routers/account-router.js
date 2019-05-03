@@ -2,13 +2,16 @@ import express from 'express';
 import * as accountController from '../controllers/account';
 import checkWebtoken from '../middlewares/checkWebtoken';
 import validateFormSchema from '../middlewares/validateFormSchema';
+import accountErrorHandler from '../controllers/errors/account-error-handler';
 
 const router = express.Router();
 
 // Root of /account
-router.get('/', checkWebtoken, (req, res) => res.send('welcome to tijuana, tequila sexo y marihuana!'));
+router
+  .get('/', checkWebtoken, (req, res) => res.send('welcome to tijuana, tequila sexo y marihuana!'));
 
-router.route('/activate')
+router
+  .route('/activate')
   .get(accountController.activateAccount);
 
 router
@@ -21,5 +24,9 @@ router
 router
   .route('/signup')
   .post(validateFormSchema, accountController.createAccount);
+
+// Error handling
+router.use(accountErrorHandler);
+
 
 export default router;

@@ -1,31 +1,19 @@
 import projectService from '../../../services/project.service';
-
-function generateProject(projectData, uuid) {
-  const { name, categories } = projectData;
-  const project = {
-    name,
-    categories: categories || [],
-    author: uuid,
-    admins: [uuid],
-    users: [uuid],
-    tasks: [],
-    reports: [],
-    createdAt: Date.now(),
-  };
-  return project;
-}
+import accountService from '../../../services/account.service';
 
 async function createProject(req, res) {
+  console.log('create project controller');
   const formData = req.body;
-  const { claims: { uuid } } = req;
+  const { uuid } = req.claims;
+  const projectData = { ...formData, uuid };
   try {
-    const project = generateProject(formData, uuid);
-    const newProject = await projectService.saveNewProject(project);
+    const project = projectService.generateProject(projectData);
+    const newProject = await projectService.createProject(project);
 
-    await projectService.addProjectIdToUser(uuid, newProject._id);
+    await accountService.addProjectIdToUser(uuid, newProject._id);
     return res.status(201).json(newProject);
   } catch (e) {
-    return res.status(500).send();
+    return res.status(500).send(e.message);
   }
 }
 

@@ -1,10 +1,9 @@
 import uuiV4 from 'uuidv4';
-import { User } from '../databases/schemas';
+import { User, Project } from '../models';
 
 
 // UTILS _________________________________________________________________
 // const hashpassword = (password) => bcrypt.hash(password, 10);
-
 // Replaces the first T, to be properly stored in SQL date format (UTC)
 const getNormalizedNowDate = () => new Date().toISOString().substring(0, 19).replace('T', ' ');
 
@@ -12,6 +11,12 @@ function getHourDiference(date1) {
   const date = date1.replace(' ', 'T').concat('Z');
   const hourDiff = (new Date() - new Date(date)) / (1000 * 60 * 60);
   return hourDiff;
+}
+/**
+ * @returns {Boolean}
+ */
+function isVerificationCodeValid(generationDate) {
+  return getHourDiference(generationDate) <= 24;
 }
 
 /** Insert a new user in the database
@@ -45,12 +50,7 @@ async function activateUserAccount(uuid) {
   };
   return User.findOneAndUpdate({ uuid }, updateQuery, { new: true });
 }
-/**
- * @returns {Boolean}
- */
-function isVerificationCodeValid(generationDate) {
-  return getHourDiference(generationDate) <= 24;
-}
+
 
 /**
  * @returns {String} New verification code
@@ -63,6 +63,15 @@ async function resetVerificationCode(userId) {
   };
   const user = await User.findByIdAndUpdate(userId, updateQuery, { new: true });
   return user.verificationCode;
+}
+
+// USER PROJECTS ___________________________________________________________________________
+async function getUserProjects(uuid) {
+  return Project.find({ users: uuid });
+}
+// Shouldnt this be in USER?? is another domain...
+async function addProjectIdToUser(uuid, projectId) {
+  return User.findOneAndUpdate({ uuid }, { $push: { projects: projectId } });
 }
 
 
@@ -80,7 +89,9 @@ async function tempBanUserLogin(uuid, time) {
 }
 
 export default {
+  addProjectIdToUser,
   activateUserAccount,
+  getUserProjects,
   getUserByVerificationCode,
   getUserByEmail,
   isVerificationCodeValid,
