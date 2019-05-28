@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 // import { workSessionSchema } from './worksession';
 
 export const taskSchema = new Schema({
-  uuid: { type: String, unique: true }, // author (added to project by)
+  uuid: String, // author (added to project by)
   name: String,
   categories: [String],
   active: { type: Boolean },

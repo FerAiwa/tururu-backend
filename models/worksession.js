@@ -1,11 +1,11 @@
 import { Schema, model } from 'mongoose';
 
 export const workSessionSchema = new Schema({
-  uuid: { type: String, unique: true }, // user uuid = worker, creator.
-  taskId: { type: String, unique: true },
+  uuid: String, // user uuid = worker, creator.
+  taskId: String,
   startedAt: { type: Date, default: Date.now },
   endedAt: Date,
-  // ellapsedTime: Number,
+  ellapsedTime: Number,
 });
 
 const WorkSession = model('WorkSession', workSessionSchema);

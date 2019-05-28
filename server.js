@@ -2,8 +2,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import getMongooseConnection from './db/mongo';
-import loadRoutes from './routes';
-import corsHeaders from './routes/middlewares/cors-headers';
+import loadRoutes from './webserver';
+import corsHeaders from './webserver/middlewares/cors-headers';
 
 dotenv.config();
 const app = express();
