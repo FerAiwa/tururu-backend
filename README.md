@@ -1,3 +1,5 @@
-# api-learning
+# Tururu Backend
 
-1,2,3
+## Techs
+- Node.js
+- Express
