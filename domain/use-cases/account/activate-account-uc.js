@@ -29,7 +29,6 @@ function getAccountActivation() {
 
 /** Consumes the verification code and activates user account.
  * @param {string} verificationCode
- * @param {userRepository} userRepo
  */
 async function activateAccount(verificationCode) {
   try {

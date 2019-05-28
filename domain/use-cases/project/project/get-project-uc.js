@@ -2,11 +2,12 @@ import projectRepo from '../../../repositories/project-repository';
 import CustomErr from '../../../errors/customError';
 
 function isUserAllowed(uuid, { users, isPrivate }) {
-  return (isPrivate && users.includes(uuid)) || true;
+  if (isPrivate) return users.includes(uuid);
+  return true;
 }
 
 /**
- * Recovers a project from db
+ * Recovers a project from the project repository
  * @param {string} uuid User unique identifier.
  * @param {string} projectId Project _id
  */

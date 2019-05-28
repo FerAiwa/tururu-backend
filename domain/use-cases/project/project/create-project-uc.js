@@ -17,7 +17,6 @@ async function createProjectUC({ uuid, name, categories, startAt, deadline }) {
       startAt: startAt || null,
       deadline: deadline || null,
     };
-    console.log(newProject);
     return projectRepo.createProject(newProject);
   } catch (e) {
     throw (e);
