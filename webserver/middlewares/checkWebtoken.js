@@ -15,6 +15,7 @@ async function checkWebtoken(req, res, next) {
     req.claims = {
       uuid: decoded.uuid,
     };
+    // console.log('user auth', req.claims);
     // [👌] token is valid. User can continue to a protected route
     next();
   } catch (e) {

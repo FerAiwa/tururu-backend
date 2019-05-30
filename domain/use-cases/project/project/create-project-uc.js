@@ -1,23 +1,28 @@
-import projectRepo from '../../../repositories/project-repository';
+import projectRepository from '../../../repositories/project-repository';
+
+/** Returns a basic project setup */
+function generateStarterProject({ uuid, name, categories, startAt, deadline }) {
+  return {
+    name,
+    categories: categories || [],
+    owner: uuid,
+    admins: [uuid],
+    users: [uuid],
+    tasks: [],
+    createdAt: Date.now(),
+    startAt: startAt || null,
+    deadline: deadline || null,
+  };
+}
 
 /**
  * Creates a new project
  * @param {Project} project Basic project data.
  */
-async function createProjectUC({ uuid, name, categories, startAt, deadline }) {
+async function createProjectUC(projectData) {
   try {
-    const newProject = {
-      name,
-      categories: categories || [],
-      uuid,
-      admins: [uuid],
-      users: [uuid],
-      tasks: [],
-      createdAt: Date.now(),
-      startAt: startAt || null,
-      deadline: deadline || null,
-    };
-    return projectRepo.createProject(newProject);
+    const newProject = generateStarterProject(projectData);
+    return projectRepository.createProject(newProject);
   } catch (e) {
     throw (e);
   }

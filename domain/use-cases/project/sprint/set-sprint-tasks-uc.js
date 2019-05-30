@@ -1,3 +1,5 @@
+// DEPRECATED! 28/05
+
 /**
  * Adds tasks id to a sprint.
  * @description Reassign from the project todo-list to a new sprint is part of the proccess
