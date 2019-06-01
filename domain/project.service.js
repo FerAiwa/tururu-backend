@@ -113,7 +113,8 @@ async function createTasks(uuid, projectId, tasks) {
   const query = { _id: projectId, admins: uuid };
   const op = { $push: { tasks: [...newTasks] } };
   // const projection = 'tasks -_id';
-  await Project.updateOne(query, op).lean();
+  const result = await Project.updateOne(query, op).lean();
+  console.log(result);
   return newTasks;
 }
 

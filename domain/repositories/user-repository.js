@@ -1,9 +1,4 @@
-import uuiV4 from 'uuidv4';
-import bcrypt from 'bcrypt';
-import { User } from '../../models/user';
-import MongoRepository from './mongo-repo';
-
-const genericRepo = new MongoRepository('User');
+import User from '../../models/user';
 
 /**
  * Finds a user by uuid
@@ -11,7 +6,7 @@ const genericRepo = new MongoRepository('User');
  * @returns {User}
  */
 async function findByUuid(uuid) {
-  return genericRepo.findOne({ uuid });
+  return User.findOne({ uuid });
 }
 
 /**
@@ -20,7 +15,7 @@ async function findByUuid(uuid) {
  * @returns {User}
  */
 async function findByEmail(email) {
-  return genericRepo.findOne({ email });
+  User.findOne({ email });
 }
 
 /**
@@ -29,7 +24,7 @@ async function findByEmail(email) {
  * @returns {Promise<User>}
  */
 async function findByVerificationCode(verificationCode) {
-  return genericRepo.findOne({ verificationCode });
+  return User.findOne({ verificationCode });
 }
 
 /**
@@ -37,7 +32,7 @@ async function findByVerificationCode(verificationCode) {
  * @param {*} user
  */
 async function update(user) {
-  const result = await userRepository.update(user);
+  const result = await User.updateOne(user);
   return result;
 }
 

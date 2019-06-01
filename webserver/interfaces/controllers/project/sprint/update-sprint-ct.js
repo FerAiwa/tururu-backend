@@ -1,9 +1,8 @@
 import { sprintUC } from '../../../../../domain/use-cases/project';
 /**
-* Updates a Sprint
+* Updates the active project sprint
 */
 async function updateSprint(req, res, next) {
-  console.log('patchin sprint');
   const { uuid } = req.claims;
   const { projectId } = req.params;
   const sprintData = req.body;

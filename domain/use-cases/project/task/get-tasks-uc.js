@@ -1,9 +1,18 @@
+import taskRepository from '../../../repositories/task-repository';
+import { PermissionErr } from '../../../errors/customError';
+
+/**
+ * Recover all the tasks from a project.
+ * @param {string} uuid User uuidd
+ * @param {string} projectId Project _id
+ * @rules
+ * - User must have access to the project.
+ */
 async function getTasksUC(uuid, projectId) {
-  console.log(uuid, projectId)
-  const query = { _id: projectId, users: uuid };
-  const projection = 'tasks';
-  // const proj = { '_id' 'tasks'}
-  return Project.findOne(query, projection).lean();
+  const tasks = await taskRepository.getTasks(uuid, projectId);
+  if (!tasks) throw PermissionErr('PRIVATE');
+
+  return tasks;
 }
 
 export default getTasksUC;

@@ -1,15 +1,25 @@
+import { Task } from '../../../../models';
+import taskRepository from '../../../repositories/task-repository';
+import { PermissionErr } from '../../../errors/customError';
+
 /**
- * Adds n task objects to the project todo-list.
- * This step is previous to sprint assignement.
+ * Adds tasks to the project list.
+ * @param {string} uuid  User uuid
+ * @param {string} projectId  Project id
+ * @param {Object[]} tasks Array of tasks basic data.
+ * @return {Promise<Task[]>} task[]
+ * @rules
+ * - Requires user to have admin permissions.
  */
-async function createTasksUC(uuid, projectId, tasks) {
+async function createTasksUC({ uuid, projectId, tasks }) {
+
   const newTasks = tasks.map(task => new Task(task));
-  console.log({ uuid, projectId, tasks });
-  // user must be included in admins to procceed.
-  const query = { _id: projectId, admins: uuid };
-  const op = { $push: { tasks: [...newTasks] } };
-  // const projection = 'tasks -_id';
-  await Project.updateOne(query, op).lean();
+
+  const updateSuccess = await taskRepository
+    .addTasks({ uuid, projectId, newTasks });
+
+  if (!updateSuccess) throw PermissionErr('NOTADMIN');
+
   return newTasks;
 }
 

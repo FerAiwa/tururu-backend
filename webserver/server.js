@@ -1,16 +1,16 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import getMongooseConnection from '../db/mongo';
 import loadRoutes from './routes';
-import corsHeaders from './middlewares/cors-headers';
 
 dotenv.config();
 const app = express();
 
 // Middlewares
 app.use(bodyParser());
-app.use(corsHeaders);
+app.use(cors());
 loadRoutes(app); // API routing
 
 /** Stablish db connection before starting the server */

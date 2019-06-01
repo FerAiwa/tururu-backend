@@ -23,10 +23,12 @@ function PermissionErr(code) {
     const message = 'The requested action requires owner permissions.';
     return new CustomErr({ code, message, context: 'permissions' });
   }
-  // notFound: ['NOTFOUND', 'The requested project doesn´t exist.'],
-  // notAllow: ['NOTALLOW', 'This project is private, contact the project admin to gain access.'],
-  // notAdmin: ['NOTADMIN', 'Only project admins can edit project resources.'],
+  if (code === 'PRIVATE') {
+    const message = 'This project is private, contact the project admin to gain access.';
+    return new CustomErr({ code, message, context: 'read' });
+  }
 }
+
 function ActionNotAllowErr(message) {
   return new CustomErr({ code: 'FORBIDDEN', message });
 }

@@ -1,6 +1,7 @@
 import express from 'express';
 import checkWebtoken from '../middlewares/checkWebtoken';
 import * as projectCT from '../interfaces/controllers/project';
+import JoiErrorMapper from '../interfaces/mappers/errors/joi-error-mapper';
 import projectErrorHandler from '../interfaces/mappers/errors/project-error-handler';
 
 // PATH: /PROJECTS
@@ -13,7 +14,7 @@ router.route('/:projectId')
 
 router.route('/:projectId/tasks')
   .get(projectCT.getTasks)
-  .post(projectCT.addTasks);
+  .post(projectCT.createTasks);
 
 router.route('/:projectId/sprint')
   .post(projectCT.createSprint)
@@ -33,6 +34,7 @@ router.route('/:projectId/admins')
   .post(projectCT.addAdmin)
   .delete(projectCT.removeAdmin);
 
-router.use(projectErrorHandler);
+
+router.use(JoiErrorMapper, projectErrorHandler);
 
 export default router;

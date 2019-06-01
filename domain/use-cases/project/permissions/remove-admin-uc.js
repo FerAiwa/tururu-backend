@@ -16,6 +16,7 @@ async function removeAdminUC({ uuid, projectId, targetUser }) {
   if (!project) throw NotFoundErr();
 
   const isOwnerRequest = project.owner === uuid;
+
   if (!isOwnerRequest) throw PermissionErr('NOTOWNER');
 
   if (isOwnerRequest && targetUser === uuid) {

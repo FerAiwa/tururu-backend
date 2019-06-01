@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import CustomErr from '../../../models/customError';
 import emailService from '../../email.service';
-import { User } from '../../../models';
+import User from '../../../models/user';
 
 async function isValidPassword(password, storedPassword) {
   return bcrypt.compare(password, storedPassword);
@@ -11,6 +11,7 @@ async function isValidPassword(password, storedPassword) {
  * Provides a user JWT token if the user gives ok password and passes all access pre-conditions.
  * @param {*} email
  * @param {*} password
+ * @returns { Promise<{ accessToken: string, uuid: string, email: string }> } token
  */
 async function login(email, password) {
   try {
@@ -54,9 +55,12 @@ async function login(email, password) {
       user.save();
       // user.setLoginAttempts(0);
     }
-    return jwt.sign({ uuid }, process.env.WEBTOKEN_SECRET, { expiresIn: '1h' });
-  }
-  catch (e) {
+    return {
+      accessToken: jwt.sign({ uuid }, process.env.WEBTOKEN_SECRET, { expiresIn: '1h' }),
+      email: user.email,
+      uuid,
+    };
+  } catch (e) {
     e.context = 'login';
     throw (e);
   }

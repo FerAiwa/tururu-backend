@@ -1,4 +1,6 @@
-
+/**
+ * Sets the HTTP status code for a Custom Error and sends a user-friendly error message.
+ */
 function projectErrorHandler(err, req, res, next) {
   console.log(err.message);
   if (!err.code) return res.status(500).send();
@@ -8,12 +10,14 @@ function projectErrorHandler(err, req, res, next) {
 
   if (err.context === 'project') {
     // CODE     STATUS    DESCRIPTION 💩
-    // NOTFOUND  404      
-    // NOTALLOW  401      
+    // NOTFOUND  404
+    // NOTALLOW  401
   }
 
+  if (err.context === 'validation') {
+    return res.status(400).send(err);
+  }
 
-  // Untracked custom error... save!
   return res.status(500).send();
 }
 

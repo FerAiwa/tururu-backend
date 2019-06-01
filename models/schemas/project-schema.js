@@ -1,7 +1,7 @@
 import { Schema } from 'mongoose';
-import { sprintSchema } from '../sprint';
-import { taskSchema } from '../task';
-import { workSessionSchema } from '../worksession';
+import sprintSchema from './sprint-schema';
+import taskSchema from './task-schema';
+import workSessionSchema from './worksession-schema';
 
 /**
  * @class Project

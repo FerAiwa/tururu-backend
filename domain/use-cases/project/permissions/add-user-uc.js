@@ -8,13 +8,12 @@ import { NotFoundErr, PermissionErr } from '../../../errors/customError';
  * @param {string} targetUuid   Target user uuid
  */
 async function addUserUC({ uuid, projectId, targetUser }) {
-  /* ### Paths
+  /* ### Path
     - Verify that the request comes from a project admin.
     - Check if the target user exist. (?)
     - Add the user to project user-list.
- */
+  */
   // The repo tries to execute action based on previous conditions as truth
-  console.log(uuid, projectId, targetUser);
   const updateSuccess = await projectRepository.addUser({ uuid, projectId, targetUser });
   if (!updateSuccess) {
     /*   #### Unhappy Paths
@@ -22,8 +21,11 @@ async function addUserUC({ uuid, projectId, targetUser }) {
       - 401. User is not project admin
      */
     const project = await projectRepository.findProjectById(projectId);
+
     if (!project) throw NotFoundErr();
+
     if (!project.admins.includes(uuid)) throw PermissionErr('NOTADMIN');
+
     throw new Error();
   }
   return true;

@@ -1,13 +1,14 @@
-import projectService from '../../../../../domain/project.service';
+import { workSessionUC } from '../../../../../domain/use-cases/project';
 
+/**
+ * Ends the user active worksession
+ */
 async function stopWorkSession(req, res, next) {
-  console.log('patching worksession');
   const { projectId } = req.params;
   const { uuid } = req.claims;
   const { workSession } = req.body;
   try {
-    const session = await projectService.finishWorkSession(uuid, projectId, workSession);
-    if (!session) return res.status(500).send();
+    await workSessionUC.finishWorkSession(uuid, projectId, workSession);
     return res.status(204).send();
   } catch (e) {
     return next(e);

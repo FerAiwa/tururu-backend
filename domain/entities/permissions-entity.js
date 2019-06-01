@@ -1,11 +1,6 @@
 import projectRepository from '../repositories/project-repository';
 import { PermissionErr, NotFoundErr } from '../errors/customError';
 
-const genericUnhappyPaths = {
-  notAllow: ['NOTALLOW', 'This project is private, contact the project admin to gain access.'],
-  notAdmin: ['NOTADMIN', 'Only project admins can edit project resources.'],
-};
-
 /** Checks if the user has admin role in the project */
 function isUserAdmin(uuid, { admins }) {
   return admins.includes(uuid);
@@ -20,7 +15,14 @@ function canUserRead(uuid, { users, isPrivate }) {
   return true;
 }
 
-async function checkReadUnhappyPaths(uuid, projectId) {
+/**
+ * Check if the user got access to the project.
+ * Throws a Permission err otherwise.
+ * @param {*} uuid 
+ * @param {*} projectId 
+ */
+
+async function checkReadPermissions(uuid, projectId) {
   const project = await projectRepository
     .findProjectById(projectId);
   if (!project) {
@@ -37,7 +39,7 @@ async function checkReadUnhappyPaths(uuid, projectId) {
  * @param {string} uuid
  * @param {string} projectId
  */
-async function checkAdminUnhappyPaths(uuid, projectId) {
+async function checkAdminPermissions(uuid, projectId) {
   const project = await projectRepository
     .findProjectById(projectId);
 
@@ -53,8 +55,8 @@ async function checkAdminUnhappyPaths(uuid, projectId) {
 
 
 const permissionsEntity = {
-  checkReadUnhappyPaths,
-  checkAdminUnhappyPaths,
+  checkReadPermissions,
+  checkAdminPermissions,
 };
 
 export default permissionsEntity;

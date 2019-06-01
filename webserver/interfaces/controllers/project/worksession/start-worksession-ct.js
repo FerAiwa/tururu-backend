@@ -1,15 +1,14 @@
-import projectService from '../../../../../domain/project.service';
+import { workSessionUC } from '../../../../../domain/use-cases/project';
 
 /**
- * Creates a new worksession for the project.
+ * Creates a new work session for the user.
  */
 async function startWorkSession(req, res, next) {
-  console.log('posting worksession');
   const { projectId } = req.params;
   const { uuid } = req.claims;
   const { taskId } = req.body;
   try {
-    const newWorksession = await projectService.createWorkSession(uuid, projectId, taskId);
+    const newWorksession = await workSessionUC.createWorkSessionUC(uuid, projectId, taskId);
     return res.status(201).json(newWorksession);
   } catch (e) {
     return next(e);

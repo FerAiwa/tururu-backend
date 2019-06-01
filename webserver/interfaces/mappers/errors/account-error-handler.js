@@ -1,6 +1,6 @@
 
 function accountErrorHandler(err, req, res, next) {
-  console.log(err.message);
+  console.log(err);
   if (!err.code) return res.status(500).send();
   const { code, message, ...details } = err;
   console.log({ code, message, details });

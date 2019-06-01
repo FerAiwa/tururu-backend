@@ -1,6 +1,6 @@
 import projectRepository from '../../../repositories/project-repository';
 
-/** Returns a basic project setup */
+/** Returns a basic project presset */
 function generateStarterProject({ uuid, name, categories, startAt, deadline }) {
   return {
     name,
@@ -16,7 +16,7 @@ function generateStarterProject({ uuid, name, categories, startAt, deadline }) {
 }
 
 /**
- * Creates a new project
+ * Creates a new project and sends it to the project repository.
  * @param {Project} project Basic project data.
  */
 async function createProjectUC(projectData) {

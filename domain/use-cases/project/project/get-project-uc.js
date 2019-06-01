@@ -19,13 +19,9 @@ async function getProjectUC(uuid, projectId) {
   const { notFound, notAllow } = genericUnhappyPaths;
   const project = await projectRepo.findProjectById(projectId);
 
-  if (!project) {
-    throw ProjectErr(...notFound);
-  }
+  if (!project) throw ProjectErr(...notFound);
 
-  if (!isUserAllowed(uuid, project)) {
-    throw ProjectErr(...notAllow);
-  }
+  if (!isUserAllowed(uuid, project)) throw ProjectErr(...notAllow);
 
   return project;
 }

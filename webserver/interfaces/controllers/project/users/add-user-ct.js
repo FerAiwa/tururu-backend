@@ -1,7 +1,7 @@
 import { permissions } from '../../../../../domain/use-cases/project';
 
 /**
- * Promotes a user to admin
+ * Adds a user to the project
  */
 async function addUser(req, res, next) {
   const { uuid } = req.claims;

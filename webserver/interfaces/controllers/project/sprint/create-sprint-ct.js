@@ -2,6 +2,7 @@ import { sprintUC } from '../../../../../domain/use-cases/project';
 
 /**
  * Creates a new sprint in the project.
+ - Data should include sprint startsAt & endsAt (dates).
  */
 async function createSprint(req, res, next) {
   const { uuid } = req.claims;

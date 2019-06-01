@@ -7,9 +7,9 @@ async function login(req, res, next) {
   const { email, password } = req.body;
   try {
     const token = await account.loginUC(email, password);
-    return res.status(200).json({ accessToken: token, expiresIn: '1h' });
+    return res.status(200).send({ ...token, expiresIn: '1h' });
   } catch (e) {
-    return next(e); // err sent to account error handler
+    return next(e);
   }
 }
 
