@@ -18,8 +18,8 @@ function canUserRead(uuid, { users, isPrivate }) {
 /**
  * Check if the user got access to the project.
  * Throws a Permission err otherwise.
- * @param {*} uuid 
- * @param {*} projectId 
+ * @param {string} uuid
+ * @param {string} projectId
  */
 
 async function checkReadPermissions(uuid, projectId) {
