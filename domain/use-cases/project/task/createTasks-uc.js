@@ -12,8 +12,8 @@ import { PermissionErr } from '../../../errors/customError';
  * - Requires user to have admin permissions.
  */
 async function createTasksUC({ uuid, projectId, tasks }) {
-
-  const newTasks = tasks.map(task => new Task(task));
+  const newTasks = tasks
+    .map(task => new Task(task));
 
   const updateSuccess = await taskRepository
     .addTasks({ uuid, projectId, newTasks });

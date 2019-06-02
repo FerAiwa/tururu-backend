@@ -20,12 +20,8 @@ function generateStarterProject({ uuid, name, categories, startAt, deadline }) {
  * @param {Project} project Basic project data.
  */
 async function createProjectUC(projectData) {
-  try {
-    const newProject = generateStarterProject(projectData);
-    return projectRepository.createProject(newProject);
-  } catch (e) {
-    throw (e);
-  }
+  const newProject = generateStarterProject(projectData);
+  return projectRepository.createProject(newProject);
 }
 
 export default createProjectUC;

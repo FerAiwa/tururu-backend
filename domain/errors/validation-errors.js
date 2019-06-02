@@ -11,7 +11,7 @@ function GenericValidationErr() {
 function LapsedDateErr() {
   return new CustomErr({
     code: 'LAPSED_DATE',
-    message: 'Uups! Make sure start & ending dates are equal or greater than today...!',
+    message: 'Make sure start & ending dates are equal or greater than today...!',
     context: 'validation',
   });
 }

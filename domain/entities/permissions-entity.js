@@ -23,14 +23,15 @@ function canUserRead(uuid, { users, isPrivate }) {
  */
 
 async function checkReadPermissions(uuid, projectId) {
-  const project = await projectRepository
-    .findProjectById(projectId);
-  if (!project) {
-    throw NotFoundErr('project');
-  }
+  const project = await projectRepository.findProjectById(projectId);
+
+  if (!project) throw NotFoundErr();
+
   if (!canUserRead(uuid, project)) {
-    throw PermissionErr('NOTADMIN');
+    throw PermissionErr('NOTUSER');
   }
+
+  return null;
 }
 
 /**
@@ -40,12 +41,10 @@ async function checkReadPermissions(uuid, projectId) {
  * @param {string} projectId
  */
 async function checkAdminPermissions(uuid, projectId) {
-  const project = await projectRepository
-    .findProjectById(projectId);
+  const project = await projectRepository.findProjectById(projectId);
 
-  if (!project) {
-    throw NotFoundErr('project');
-  }
+  if (!project) throw NotFoundErr();
+
   if (!isUserAdmin(uuid, project)) {
     throw PermissionErr('NOTADMIN');
   }

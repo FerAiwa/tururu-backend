@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import CustomErr from '../../../models/customError';
+import CustomErr from '../../errors/customError';
 import emailService from '../../email.service';
 import User from '../../../models/user';
 

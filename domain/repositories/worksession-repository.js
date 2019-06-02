@@ -40,6 +40,18 @@ class WorkSessionRepository extends ProjectRepository {
     // },
     return this.updateOne(q, op);
   }
+
+  /**
+  * Recover all the project work sessions
+  */
+  async getWorkSessions(uuid, projectId) {
+    const q = {
+      ...this.getUsersQuery(projectId, uuid),
+    };
+    const projection = 'workSessions';
+
+    return this.model.findOne(q, projection).lean();
+  }
 }
 
 

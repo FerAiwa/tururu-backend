@@ -1,5 +1,5 @@
 import uuiV4 from 'uuidv4';
-import CustomErr from '../../../models/customError';
+import CustomErr from '../../errors/customError';
 import userRepository from '../../repositories/user-repository'; // using this as interface, the repo is inyected as dependency.
 
 function getHourDiference(date1) {

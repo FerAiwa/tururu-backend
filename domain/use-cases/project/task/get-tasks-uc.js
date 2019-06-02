@@ -10,7 +10,7 @@ import { PermissionErr } from '../../../errors/customError';
  */
 async function getTasksUC(uuid, projectId) {
   const tasks = await taskRepository.getTasks(uuid, projectId);
-  if (!tasks) throw PermissionErr('PRIVATE');
+  if (!tasks) throw PermissionErr('NOTUSER');
 
   return tasks;
 }

@@ -3,6 +3,7 @@ import { ProjectRepository } from './project-repository';
 import { Task } from '../../models';
 
 class TaskRepository extends ProjectRepository {
+
   /**
    * Adds n tasks to a project
    */

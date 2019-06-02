@@ -1,12 +1,7 @@
-async function getWorksessionUC(uuid, projectId) {
-  const query = {
-    _id: projectId,
-    users: uuid,
-    // 'workSessions.endedAt': null,
-  };
-  const projection = 'workSessions';
+import workSessionRepository from '../../../repositories/worksession-repository';
 
-  return Project.findOne(query, projection).lean();
+async function getWorksessionUC(uuid, projectId) {
+  return workSessionRepository.getWorkSessions(uuid, projectId);
 }
 
 export default getWorksessionUC;

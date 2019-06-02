@@ -17,20 +17,20 @@ function SprintErr(code, message = null) {
 function PermissionErr(code) {
   if (code === 'NOTADMIN') {
     const message = 'Only project admins can edit project resources.';
-    return new CustomErr({ code, message, context: 'edition' });
+    return new CustomErr({ code, message, context: 'permissions' });
   }
   if (code === 'NOTOWNER') {
     const message = 'The requested action requires owner permissions.';
     return new CustomErr({ code, message, context: 'permissions' });
   }
-  if (code === 'PRIVATE') {
+  if (code === 'NOTUSER') {
     const message = 'This project is private, contact the project admin to gain access.';
-    return new CustomErr({ code, message, context: 'read' });
+    return new CustomErr({ code, message, context: 'permissions' });
   }
 }
 
 function ActionNotAllowErr(message) {
-  return new CustomErr({ code: 'FORBIDDEN', message });
+  return new CustomErr({ code: 'FORBIDDEN', message, context: 'forbidden' });
 }
 
 function NotFoundErr(message, resourceType = 'project', context = null) {

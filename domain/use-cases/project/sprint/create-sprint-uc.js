@@ -18,12 +18,12 @@ async function validate(payload) {
  * - Requires user to have admin permissions.
 */
 async function createSprintUC(uuid, projectId, sprintData) {
-  await validate(sprintData, sprintCreationRules);
-
   const activeSprint = await sprintRepository.findActiveSprint(uuid, projectId);
   if (activeSprint) {
     throw ActionNotAllowErr('There is a sprint in course. It must end before creating another.');
   }
+
+  await validate(sprintData, sprintCreationRules);
 
   const newSprint = await sprintRepository.createSprint(projectId, uuid, sprintData);
   if (!newSprint) {

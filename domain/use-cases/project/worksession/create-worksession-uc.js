@@ -21,10 +21,12 @@ async function createWorkSessionUC(uuid, projectId, taskId) {
 
   const sessionId = await workSessionRepository
     .createWorkSession(uuid, projectId, taskId);
+
   if (!sessionId) {
     await permissionsEntity.checkReadPermissions(uuid, projectId);
     throw new Error('unknown');
   }
+
   return sessionId;
 }
 

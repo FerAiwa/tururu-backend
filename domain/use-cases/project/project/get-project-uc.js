@@ -1,10 +1,5 @@
 import projectRepo from '../../../repositories/project-repository';
-import { ProjectErr } from '../../../errors/customError';
-
-const genericUnhappyPaths = {
-  notFound: ['NOTFOUND', 'The requested project doesn´t exist.'],
-  notAllow: ['NOTALLOW', 'This project is private, contact the project admin to gain access.'],
-};
+import { NotFoundErr, PermissionErr } from '../../../errors/customError';
 
 /**
  * Checks if the project is accesible.
@@ -15,13 +10,20 @@ function isUserAllowed(uuid, { users, isPrivate }) {
   return true;
 }
 
+/**
+ * Recovers a existing project
+ * @param {string} uuid User uuidd
+ * @param {string} projectId Project _id
+ * @rules
+ * - If the project is private, user must be in the access list.
+ */
+
 async function getProjectUC(uuid, projectId) {
-  const { notFound, notAllow } = genericUnhappyPaths;
   const project = await projectRepo.findProjectById(projectId);
 
-  if (!project) throw ProjectErr(...notFound);
+  if (!project) throw NotFoundErr();
 
-  if (!isUserAllowed(uuid, project)) throw ProjectErr(...notAllow);
+  if (!isUserAllowed(uuid, project)) throw PermissionErr('NOTUSER');
 
   return project;
 }
