@@ -14,6 +14,9 @@ async function isValidPassword(password, storedPassword) {
  * @returns { Promise<{ accessToken: string, uuid: string, email: string }> } token
  */
 async function login(email, password) {
+
+  // import joi and validate email and password!
+
   try {
     const user = await User.findByEmail(email);
     if (!user) throw new CustomErr('NOUSER', 'User doesn´t exist');

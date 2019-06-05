@@ -1,11 +1,11 @@
 import Joi from 'joi';
-import sprintCreationRules from '../../../../models/validators/sprint-creation-rules';
+import { sprintSchemaRules } from '../../../../models/validators/sprint-creation-rules';
 import sprintRepository from '../../../repositories/sprint-repository';
 import permissionsEntity from '../../../entities/permissions-entity';
 import { SprintErr } from '../../../errors/customError';
 
 async function validate(payload) {
-  return Joi.validate(payload, sprintCreationRules);
+  return Joi.validate(payload, sprintSchemaRules);
 }
 
 /**
@@ -15,6 +15,7 @@ async function validate(payload) {
  * @param {Object} sprint Sprint to update
  * @rules
  * - Requires user to have admin permissions
+ * - Sprint dates can not be edited once created.
  */
 async function updateSprintUC(uuid, projectId, sprint) {
   await validate(sprint);

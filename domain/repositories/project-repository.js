@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import MongoRepository from './mongo-repo';
 import { Project } from '../../models';
 
@@ -5,6 +6,47 @@ export class ProjectRepository extends MongoRepository {
   constructor() {
     super();
     this.model = Project;
+  }
+
+  /**
+   * Sets project banner
+   * @param {string} uuid
+   * @param {string} projectId
+   * @param {string} bannerUrl
+   */
+  async setProjectBanner(uuid, projectId, bannerUrl) {
+    const q = this.getOwnerQuery(projectId, uuid);
+    const op = { bannerUrl };
+
+    return this.model.updateOne(q, op);
+  }
+
+  async getProjectInfo(...ids) {
+    // Mongo needs converted string to ObjectId to search multi.
+    const objectedIds = ids.map(id => Types.ObjectId(id));
+    const $match = {
+      _id: {
+        $in: [...objectedIds],
+      },
+    };
+    const $project = {
+      name: '$name',
+      bannerUrl: '$bannerUrl',
+      _id: '$_id',
+      users: '$users',
+    };
+
+    return this.model.aggregate([{ $match }, { $project }]);
+  }
+
+  /**
+   * Get users from project
+   * @param {string} projectId
+   * @returns {Promise<string[]>} uuid[]
+   */
+  async getUsers(projectId) {
+    const projection = 'users';
+    return this.model.findById(projectId, projection);
   }
 
   /**

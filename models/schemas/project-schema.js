@@ -13,6 +13,7 @@ const projectSchema = new Schema({
   users: [String], // ALL the users (including admins, owner)
   // Content
   name: String,
+  bannerUrl: { type: String, default: null },
   categories: [String],
   tasks: [taskSchema], // What (pila de proyecto)
   workSessions: [workSessionSchema],

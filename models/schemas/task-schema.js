@@ -7,6 +7,7 @@ const taskSchema = new Schema({
   active: { type: Boolean },
   completed: { type: Boolean },
   createdAt: { type: Date, default: Date.now },
+  completedAt: Date,
   ellapsedTime: { type: Number, default: 0 },
 });
 

@@ -3,7 +3,7 @@ import workSessionRepository from '../../../repositories/worksession-repository'
 import permissionsEntity from '../../../entities/permissions-entity';
 
 async function validate(payload) {
-  return Joi.validate(payload, { _id: Joi.string().required });
+  return Joi.validate(payload, { _id: Joi.string().required() });
 }
 
 /**
@@ -17,17 +17,18 @@ async function validate(payload) {
  */
 async function createWorkSessionUC(uuid, projectId, taskId) {
   // SHOULD NOT let createWorksession if task is busy or user has a session open.
+  console.log('creating ws', taskId);
   await validate({ _id: taskId });
 
-  const sessionId = await workSessionRepository
+  const workSession = await workSessionRepository
     .createWorkSession(uuid, projectId, taskId);
 
-  if (!sessionId) {
+  if (!workSession) {
     await permissionsEntity.checkReadPermissions(uuid, projectId);
     throw new Error('unknown');
   }
 
-  return sessionId;
+  return workSession;
 }
 
 export default createWorkSessionUC;

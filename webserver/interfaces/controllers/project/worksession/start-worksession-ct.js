@@ -8,8 +8,8 @@ async function startWorkSession(req, res, next) {
   const { uuid } = req.claims;
   const { taskId } = req.body;
   try {
-    const newWorksession = await workSessionUC.createWorkSessionUC(uuid, projectId, taskId);
-    return res.status(201).json(newWorksession);
+    const workSession = await workSessionUC.createWorkSessionUC(uuid, projectId, taskId);
+    return res.status(201).json(workSession);
   } catch (e) {
     return next(e);
   }

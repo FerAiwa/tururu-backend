@@ -2,7 +2,7 @@
  * Sets the HTTP status code for a Custom Error and sends a user-friendly error message.
  */
 function projectErrorHandler(err, req, res, next) {
-  console.log(err.message);
+  console.log(err);
   if (!err.code) return res.status(500).send();
   const { code, message, context } = err;
   console.log({ code, message, context });

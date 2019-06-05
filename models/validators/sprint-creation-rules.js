@@ -8,4 +8,12 @@ const sprintCreationRules = {
   reward: Joi.string().allow('')
 };
 
+export const sprintSchemaRules = {
+  startsAt: Joi.date().required(),
+  endsAt: Joi.date().required(),
+  reward: Joi.string().allow(''),
+  tasks: Joi.array().items(Joi.string()),
+  _id: Joi.string().required(),
+};
+
 export default sprintCreationRules;

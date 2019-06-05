@@ -21,14 +21,17 @@ class SprintRepository extends ProjectRepository {
   }
 
   /**
-  * Updates a project sprint
+  * Updates a project sprint data, except for dates which are inmutable.
   */
   async updateSprint(uuid, projectId, sprintData) {
     const q = {
       ...this.getAdminsQuery(projectId, uuid),
       'sprints._id': sprintData._id,
     };
-    const op = { 'sprints.$': sprintData };
+    const op = {
+      'sprints.$.reward': sprintData.reward || null,
+      'sprints.$.tasks': sprintData.tasks || [],
+    };
     const { nModified } = await this.model.updateOne(q, op);
 
     return nModified;

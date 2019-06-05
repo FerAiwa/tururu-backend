@@ -13,6 +13,7 @@ import removeUser from './users/remove-user-ct';
 import startWorkSession from './worksession/start-worksession-ct';
 import stopWorkSession from './worksession/end-worksession-ct';
 import updateSprint from './sprint/update-sprint-ct';
+import uploadBanner from './project/upload-banner-ct';
 
 
 export {
@@ -30,4 +31,5 @@ export {
   removeAdmin,
   removeUser,
   updateSprint,
+  uploadBanner,
 };

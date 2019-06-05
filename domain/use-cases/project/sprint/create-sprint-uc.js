@@ -23,7 +23,7 @@ async function createSprintUC(uuid, projectId, sprintData) {
     throw ActionNotAllowErr('There is a sprint in course. It must end before creating another.');
   }
 
-  await validate(sprintData, sprintCreationRules);
+  await validate(sprintData);
 
   const newSprint = await sprintRepository.createSprint(projectId, uuid, sprintData);
   if (!newSprint) {

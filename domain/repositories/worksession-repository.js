@@ -16,7 +16,7 @@ class WorkSessionRepository extends ProjectRepository {
     const op = {
       $push: { workSessions: newSession },
     };
-    const { nModified } = await this.updateOne(q, op);
+    const { nModified } = await this.model.updateOne(q, op);
     return nModified ? newSession : null;
   }
 

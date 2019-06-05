@@ -12,6 +12,8 @@ import removeAdminUC from './permissions/remove-admin-uc';
 import removeUserUC from './permissions/remove-user-uc';
 import setSprintTasks from './sprint/set-sprint-tasks-uc';
 import updateSprint from './sprint/update-sprint-uc';
+import getTeamUC from './team/get-team-uc';
+import uploadBanner from './project/upload-banner-uc';
 
 const permissions = {
   addUserUC,
@@ -23,6 +25,7 @@ const permissions = {
 const projectUC = {
   createProject,
   getProject,
+  uploadBanner,
 };
 
 const sprintUC = {
@@ -42,10 +45,15 @@ const workSessionUC = {
   getWorksession,
 };
 
+const teamUC = {
+  getTeamUC,
+};
+
 export {
   permissions,
   projectUC,
   sprintUC,
+  teamUC,
   taskUC,
   workSessionUC,
 };

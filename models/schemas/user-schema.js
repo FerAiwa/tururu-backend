@@ -17,6 +17,7 @@ const userSchema = new Schema({
   unbanDate: { type: Date, default: null },
   // last_login: String,
   projects: [Schema.ObjectId],
+  avatarUrl: String,
 });
 
 userSchema.statics.findByEmail = async function (email) { // eslint-disable-line

@@ -1,18 +1,17 @@
-import accountService from '../../../../../domain/account.service';
 import { projectUC } from '../../../../../domain/use-cases/project';
 
 /**
- * Creates a project and adds the new doc id to the user project list.
+ * Creates a project and adds the id to the user project list.
+ * @returns Location projectId  (front redirects to the project page after creation)
  */
 async function createProject(req, res, next) {
   const { uuid } = req.claims;
-  const formData = req.body;
-  const projectData = { ...formData, uuid };
+  const projectData = req.body;
   try {
-    const newProject = await projectUC.createProject(projectData);
-    await accountService.addProjectIdToUser(uuid, newProject._id);
+    const projectId = await projectUC.createProject(uuid, projectData);
 
-    return res.status(201).send(newProject);
+    // res.header('Location', projectId);
+    return res.status(201).send(projectId);
   } catch (e) {
     return next(e);
   }
