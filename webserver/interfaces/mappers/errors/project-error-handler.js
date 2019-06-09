@@ -18,11 +18,12 @@ function projectErrorHandler(err, req, res, next) {
     return res.status(400).send(err);
   }
   if (context === 'permissions') {
-    return res.status(401).send(err);
+    return res.status(403).send(err);
   }
 
   if (context === 'forbidden') {
-    return res.status(403).send(err);
+    // App actions that are not allowed, such as owner deletying himself from a project.
+    return res.status(412).send(err);
   }
 
   return res.status(500).send();

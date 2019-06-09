@@ -54,7 +54,7 @@ function getTasksStats({ tasks }) {
  */
 function getWorkTimeTotals(project) {
   const { workSessions } = project;
-  const summEllapsedTime = (acc, { ellapsedTime }) => acc + (ellapsedTime || 0);
+  const summEllapsedTime = (acc, { ellapsedTime }) => acc + (ellapsedTime);
 
   const activeSprint = project.activeSprint && project.sprints
     .find(x => `${x._id}` === `${project.activeSprint}`);
@@ -108,7 +108,7 @@ function getPerformanceStats(days, tasks) {
   };
 
   const computed = {
-    balance: getRoundPercent(raw.taskDayAVG, raw.expectedTaskDayAVG) || 0,
+    balance: getRoundPercent(raw.taskDayAVG, raw.expectedTaskDayAVG),
   };
 
   return {

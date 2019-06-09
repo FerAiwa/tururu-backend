@@ -22,7 +22,7 @@ export class ProjectRepository extends MongoRepository {
   }
 
   async getProjectInfo(...ids) {
-    // Mongo needs converted string to ObjectId to search multi.
+    // Mongo needs converted string to ObjectId to search multiple projects.
     const objectedIds = ids.map(id => Types.ObjectId(id));
     const $match = {
       _id: {
