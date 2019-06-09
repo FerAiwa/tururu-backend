@@ -1,3 +1,10 @@
+## Dom 09/06
+  - Implemented base socketIO for controlling the worksession flow.
+    (Now other project members get notified in real time when a work session starts)
+
+## Jue 06 to Sab 08
+  - Minor fixes on repositories and documentation update.
+
 ## Mie 05/06
 - Refactored some stats functions as stats-entity, for later reuse with user stats.
 - Add GET /projects to user router.
