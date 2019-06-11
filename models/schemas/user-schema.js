@@ -5,13 +5,13 @@ import uuiV4 from 'uuidv4';
 const userSchema = new Schema({
   uuid: { type: String, unique: true },
   name: String,
-  email: String,
+  email: { type: String, unique: true },
   password: String,
-  createdAt: String,
-  verificatedAt: { type: String, default: null },
+  createdAt: Date,
+  verificatedAt: { type: Date, default: null },
   // Temp: Will be removed after verification proccess
   verificationCode: String,
-  generatedAt: String,
+  generatedAt: Date,
   // Audit
   loginAttempts: { type: Number, default: 0 },
   unbanDate: { type: Date, default: null },

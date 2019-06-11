@@ -1,72 +1,78 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import CustomErr from '../../errors/customError';
+import uuidV4 from 'uuidv4';
+
+import { loginRules } from '../../../models/validators/account-rules';
+import accountRepository from '../../repositories/account-repository';
+import validate from '../../entities/validation-entity';
 import emailService from '../../email.service';
-import User from '../../../models/user';
+import { NotFoundErr } from '../../errors/customError';
+import {
+  BadPasswordErr,
+  MaxAttemptsLoginErr,
+  UserIsBannedErr,
+  NotVerificatedLoginErr,
+} from '../../errors/account-errors';
 
 async function isValidPassword(password, storedPassword) {
   return bcrypt.compare(password, storedPassword);
 }
+
 /**
- * Provides a user JWT token if the user gives ok password and passes all access pre-conditions.
- * @param {*} email
- * @param {*} password
- * @returns { Promise<{ accessToken: string, uuid: string, email: string }> } token
+ * Provides a user token and extra payload if the user passes authentication.
+ * @param {string} email
+ * @param {string} password
+ * @return { Promise<{ accessToken: string, uuid: string, email: string }> } token
  */
 async function login(email, password) {
+  await validate({ email, password }, loginRules);
 
-  // import joi and validate email and password!
-
-  try {
-    const user = await User.findByEmail(email);
-    if (!user) throw new CustomErr('NOUSER', 'User doesn´t exist');
-
-    const {
-      unbanDate,
-      uuid,
-      loginAttempts,
-      verificatedAt,
-    } = user;
-
-    if (unbanDate) {
-      if (Date.now() < unbanDate) throw new CustomErr('USERBAN', `Account blocked until ${unbanDate.toLocaleString()}`);
-      user.unbanDate = null;
-      // user.temporalBan(null);
-    }
-    if (!verificatedAt) {
-      const newCode = await user.resetVerificationCode();
-      emailService.sendEmailRegistration(email, newCode);
-      throw new CustomErr('NOCODE', 'You can´t login until you verify your account. A new verification code was sent to your email.');
-    }
-    if (loginAttempts > 4) {
-      const minsBan = (loginAttempts * 6); // increasing block time per login
-      const unbanDate2 = new Date(Date.now() + (minsBan * 60 * 1000)).toISOString();
-      user.unbanDate = unbanDate2;
-      user.save();
-      throw new CustomErr('MAXPWD', 'Reached limit login attempts. Account blocked for 30 minutes!');
-    }
-    const validatedPWD = await isValidPassword(password, user.password);
-    if (!validatedPWD) {
-      user.loginAttempts += 1;
-      // user.saveLoginAttempt();
-      const attemptsLeft = 4 - loginAttempts;
-      throw new CustomErr('BADPWD', `Invalid password. You have ${attemptsLeft} attempts before your account is suspended.`);
-    }
-    // [👌] Give the user a 1h token & reset login attempts
-    if (user.loginAttempts) {
-      user.loginAttempts = 0;
-      user.save();
-      // user.setLoginAttempts(0);
-    }
-    return {
-      accessToken: jwt.sign({ uuid }, process.env.WEBTOKEN_SECRET, { expiresIn: '1h' }),
-      email: user.email,
-      uuid,
-    };
-  } catch (e) {
-    e.context = 'login';
-    throw (e);
+  const user = await accountRepository.findUserByEmail(email);
+  if (!user) {
+    throw NotFoundErr('', 'user', 'login');
   }
+  const { uuid } = user;
+
+  // User can´t be banned
+  if (user.unbanDate && Date.now() < user.unbanDate) {
+    throw UserIsBannedErr(user.unbanDate);
+  }
+
+  // User must be verificated
+  if (!user.verificatedAt) {
+    const newCode = uuidV4();
+    await accountRepository.resetVerificationCode(uuid, newCode);
+    await emailService.sendEmailRegistration(user.email, newCode);
+
+    throw NotVerificatedLoginErr();
+  }
+
+  // User must provide matching password
+  if (!await isValidPassword(password, user.password)) {
+    await accountRepository.updateLoginAttempts(uuid, user.loginAttempts + 1);
+    const loginAttemptsLeft = 4 - user.loginAttempts;
+
+    if (loginAttemptsLeft) {
+      throw BadPasswordErr(loginAttemptsLeft);
+    }
+    // User must login before reaching max attempts
+    const banMinutes = 60;
+    const unbanDate = new Date(Date.now() + (banMinutes * 60 * 1000));
+
+    await accountRepository.banUser(uuid, unbanDate);
+    throw MaxAttemptsLoginErr(unbanDate);
+  }
+
+  // [👌] Give the user a 1h token & reset limiters (unban, login attempts)
+  if (user.loginAttempts || user.unbanDate) {
+    await accountRepository.resetUserLoginLimiters(uuid);
+  }
+
+  return {
+    accessToken: jwt.sign({ uuid }, process.env.WEBTOKEN_SECRET, { expiresIn: '1h' }),
+    email: user.email,
+    uuid,
+  };
 }
 
 export default login;

@@ -1,8 +1,12 @@
 import bcrypt from 'bcrypt';
 import uuiV4 from 'uuidv4';
-import { User } from '../../../models';
 import emailService from '../../email.service';
+import accountRepository from '../../repositories/account-repository';
+import { registerRules } from '../../../models/validators/account-rules';
+import validate from '../../entities/validation-entity';
+import { EmailInUseErr } from '../../errors/account-errors';
 
+/** Generates additional fields for the userData before sending to repository */
 async function generateUser({ name, password, email }) {
   return {
     uuid: uuiV4(),
@@ -11,23 +15,30 @@ async function generateUser({ name, password, email }) {
     password: await bcrypt.hash(password, 10),
     createdAt: new Date().toISOString(),
     verificationCode: uuiV4(),
-    generatedAt: Date.now(),
+    generatedAt: new Date().toISOString(),
   };
 }
 
 /**
- * Creates and stores a new account
- * @param {*} userData 
+ * Creates a new account and sends a verification e-mail to the user
+ * @param {Object} userData { name, email, password }
+ * @rules
+ * - e-mail must be unique.
  */
-async function createAccount(userData) {
+async function createAccount({ name, email, password }) {
+  const registerData = { name, email, password };
+  await validate(registerData, registerRules);
+
+  const userData = await generateUser(registerData);
+
   try {
-    const user = await generateUser(userData);
-    await User.create(user);
-    await emailService.sendEmailRegistration(user.email, user.uuid);
+    await accountRepository.createUser(userData);
   } catch (e) {
-    e.context = 'creation';
+    if (e.message.includes(email)) throw EmailInUseErr();
     throw (e);
   }
+
+  await emailService.sendEmailRegistration(email, userData.uuid);
 }
 
 export default createAccount;

@@ -6,6 +6,15 @@ function accountErrorHandler(err, req, res, next) {
   console.log({ code, message, details });
   let status = 500;
 
+  if (err.context === 'validation') {
+    return res.status(400).send(err);
+  }
+
+  if (err.context === 'register') {
+    if (code === 'EMAIL') status = 401;
+    return res.status(status).send(err);
+  }
+
   if (err.context === 'login') {
     // CODE     STATUS    DESCRIPTION 💩
     // USERBAN  401       User is banned
@@ -16,15 +25,14 @@ function accountErrorHandler(err, req, res, next) {
     if (code === 'NOUSER') status = 404;
     else if (code === 'MAXPWD') status = 429;
     else status = 401;
-    return res.status(status).send({ error: message });
+    return res.status(status).send(err);
   }
 
   if (err.context === 'activation') {
-    // OUTDAT  400 User tried a expired code link. (OR INVALID code!)
-    status = code === 'OUTDAT' ? 400 : status;
-    if (code === 'DELETED') status = 404;
+    if (code === 'EXPIRED') status = 400;
+    else if (code === 'DELETED') status = 404;
 
-    return res.status(status).send({ error: message });
+    return res.status(status).send(err);
   }
   // Untracked custom error... save!
   return res.status(500).send();

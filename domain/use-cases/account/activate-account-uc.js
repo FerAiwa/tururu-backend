@@ -1,52 +1,32 @@
 import uuiV4 from 'uuidv4';
-import CustomErr from '../../errors/customError';
-import userRepository from '../../repositories/user-repository'; // using this as interface, the repo is inyected as dependency.
+import accountRepository from '../../repositories/account-repository';
+import { DeletedCodeErr, ExpiredCodeErr } from '../../errors/account-errors';
 
-function getHourDiference(date1) {
-  const hourDiff = (new Date() - new Date(+date1)) / (1000 * 60 * 60);
+function getHourDiference(stringDate) {
+  const date = new Date(stringDate).getTime();
+  const hourDiff = (Date.now() - date) / (1000 * 60 * 60);
   return hourDiff;
-}
-
-function isVerificationCodeValid(generationDate) {
-  return getHourDiference(generationDate) <= 24;
-}
-
-function getNewVerificationCode() {
-  return {
-    verificationCode: uuiV4(),
-    verificated_at: null,
-    generatedAt: new Date().toISOString(),
-  };
-}
-
-function getAccountActivation() {
-  return {
-    verificationCode: '',
-    verificatedAt: new Date().toISOString(),
-    generatedAt: '',
-  };
 }
 
 /** Consumes the verification code and activates user account.
  * @param {string} verificationCode
+ * @rules
+ * - Verification code must be used within the first 24 hours after generation.
+ * - Verification code must exist.
  */
 async function activateAccount(verificationCode) {
-  try {
-    const user = await userRepository.findByVerificationCode(verificationCode);
-    if (!user) throw new CustomErr('DELETED', 'The verification code you are trying to use no longer exists.');
+  const user = await accountRepository.findUserByVerificationCode(verificationCode);
+  if (!user) throw DeletedCodeErr();
 
-    if (!isVerificationCodeValid(user.generatedAt)) {
-      Object.assign(user, getNewVerificationCode());
-      await userRepository.update(user);
-      throw new CustomErr('OUTDAT', 'The verification code has expired. A new code was sent to your email.');
-    }
-    Object.assign(user, getAccountActivation());
-    return user.save();
-    // return userRepo.update(user);
-  } catch (e) {
-    e.context = 'activation';
-    throw (e);
+  const isCodeInTime = getHourDiference(user.generatedAt) <= 24;
+  if (!isCodeInTime) {
+    const newCode = uuiV4();
+    await accountRepository.resetVerificationCode(user.uuid, newCode);
+
+    throw ExpiredCodeErr();
   }
+
+  return accountRepository.setAcountAsVerificated(user.uuid);
 }
 
 export default activateAccount;
