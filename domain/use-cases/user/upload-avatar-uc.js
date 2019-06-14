@@ -29,10 +29,10 @@ async function uploadAvatarUC(uuid, file) {
         avatarConfig,
         async (err, result) => {
           if (err) throw err; // 401 err most likely
-
           // Store avatar URL in the user´s account.
           const { secure_url: secureUrl } = result;
-          await accountRepository.setUserAvatar(uuid, secureUrl);
+          const isUserUpdated = await accountRepository.setUserAvatar(uuid, secureUrl);
+          if (!isUserUpdated) return Error('Db update failed'); // 500
           return secureUrl;
         }
       ).end(file.buffer);

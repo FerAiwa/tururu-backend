@@ -10,9 +10,13 @@ const router = express.Router();
 
 router.use(checkWebtoken);
 
-router.get('/projects', userControllers.getProjects);
+router.get('/', userControllers.getUserInfo);
 
 router.post('/avatar', upload.single('avatar'), userControllers.uploadAvatar);
+
+router.get('/search', userControllers.searchUsers);
+
+router.get('/invitation', userControllers.manageProjectInvitation);
 
 router.use(accountErrorHandler);
 

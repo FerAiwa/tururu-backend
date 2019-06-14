@@ -2,11 +2,10 @@ import { Schema } from 'mongoose';
 import sprintSchema from './sprint-schema';
 import taskSchema from './task-schema';
 import workSessionSchema from './worksession-schema';
+import activeSessionSchema from './active-session-schema';
+import projectInvitationSchema from './project-invitation-schema';
 
-/**
- * @class Project
- * @mixes {projectSchema.methods}
- */
+
 const projectSchema = new Schema({
   owner: String, // author, "master" can create admins
   admins: [String], // Can add users or create contents.
@@ -27,14 +26,8 @@ const projectSchema = new Schema({
   // Markers
   activeSprint: Schema.ObjectId, // When (now) details
   activeTasks: [Schema.ObjectId], // Now now xD
+  activeSessions: [activeSessionSchema],
+  invitations: [projectInvitationSchema],
 });
-
-
-projectSchema.method.isUserAdmin = uuid => this.admins.includes(uuid);
-projectSchema.method.userCanRead = (uuid) => {
-  if (this.isPrivate) return this.users.includes(uuid);
-  return true;
-};
-
 
 export default projectSchema;

@@ -6,6 +6,10 @@ function accountErrorHandler(err, req, res, next) {
   console.log({ code, message, details });
   let status = 500;
 
+  if (err.context === 'authentication') {
+    return res.status(401).send(err);
+  }
+
   if (err.context === 'validation') {
     return res.status(400).send(err);
   }

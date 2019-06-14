@@ -1,12 +1,20 @@
 
 import { ProjectRepository } from './project-repository';
-import { Sprint } from '../../models';
+import Sprint from '../../models/sprint';
 
 class SprintRepository extends ProjectRepository {
+
+  // eslint-disable-next-line class-methods-use-this
+  generateSprintPresset(days) {
+    const weekEnd = new Date(Date.now() + 1000 * 60 * 60 * 24 * days);
+    return { tasks: [], startAt: Date.now(), endAt: weekEnd };
+  }
+
   /**
    * Adds a sprint to the project
+   * - If no sprintData is attached it will generate a default sprint of 7 days.
    */
-  async createSprint(projectId, uuid, sprintData) {
+  async createSprint(uuid, projectId, sprintData = this.generateSprintPresset(7)) {
     const newSprint = new Sprint(sprintData);
 
     const q = this.getAdminsQuery(projectId, uuid);
@@ -21,7 +29,7 @@ class SprintRepository extends ProjectRepository {
   }
 
   /**
-  * Updates a project sprint data, except for dates which are inmutable.
+  * Updates a project sprint tasks and reward
   */
   async updateSprint(uuid, projectId, sprintData) {
     const q = {

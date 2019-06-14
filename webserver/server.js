@@ -4,21 +4,33 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import http from 'http';
 import socketIO from 'socket.io';
-import clientSocket from './sockets/client-sockets';
+import clientSocket from './events/client-sockets';
 import getMongooseConnection from '../db/mongo';
 import loadRoutes from './routes';
 
-
 dotenv.config();
-const app = express();
 // Express Middlewares & Routing
+const app = express();
 app.use(bodyParser());
 app.use(cors());
 loadRoutes(app);
 
+
 // Bind server with socketIO & express
 const server = http.createServer(app);
-const io = socketIO(server);
+
+const io = socketIO(server, {
+  handlePreflightRequest: (req, res) => {
+    const headers = {
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Origin': process.env.ORIGIN,
+      'Access-Control-Allow-Credentials': true,
+    };
+    res.writeHead(200, headers);
+    res.end();
+  }
+});
+
 clientSocket(io);
 
 

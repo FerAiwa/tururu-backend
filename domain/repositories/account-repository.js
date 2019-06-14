@@ -59,6 +59,16 @@ export class AccountRepository {
     return this.model.updateOne({ uuid }, op);
   }
 
+  /**
+   * Search for users using full-text search
+   * @param {String} query
+   */
+  async searchUsers(query) {
+    const q = { $text: { $search: query } };
+    const scoreSearch = { score: { $meta: 'textScore' } };
+    return this.model.find(q, scoreSearch).sort(scoreSearch).lean();
+  }
+
   async findUserByEmail(email) {
     return this.model.findOne({ email }).lean();
   }
@@ -75,15 +85,39 @@ export class AccountRepository {
     return this.model.findOne(q).lean();
   }
 
-  /** Adds a project id to the user´s account */
-  async addProjectId(uuid, projectId) {
+  async addProjectInvitation(uuid, invitation) {
     const q = { uuid };
     const op = {
-      $push: { projects: projectId },
+      $addToSet: { invitations: invitation },
     };
-    return this.model.updateOne(q, op);
+    const { nModified } = await this.model.updateOne(q, op);
+    return nModified;
   }
 
+  async deleteProjectInvitation({ uuid, projectId }) {
+    const q = {
+      uuid,
+      'invitations.project': projectId,
+    };
+
+    const op = {
+      $addToSet: { projects: projectId },
+      $unset: { 'invitations.$': '' },
+    };
+
+    const { nModified } = await this.model.updateOne(q, op);
+    return nModified;
+  }
+
+  /** Adds a project id to the user´s account */
+  async addProjectIdToUserAccount(uuid, projectId) {
+    const q = { uuid };
+    const op = {
+      $addToSet: { projects: projectId },
+    };
+    const { n } = await this.model.updateOne(q, op);
+    return n;
+  }
 
   /**
    * Recovers uuid, name and avatarUrl from requested users
@@ -94,7 +128,9 @@ export class AccountRepository {
     const q = {
       uuid: { $in: [...uuid] },
     };
-    const projection = 'uuid name avatarUrl';
+    const projection = {
+      uuid: 1, name: 1, avatarUrl: 1, _id: 0,
+    };
     return this.model.find(q, projection).lean();
   }
 
@@ -106,7 +142,8 @@ export class AccountRepository {
   async setUserAvatar(uuid, avatarUrl) {
     const q = { uuid };
     const op = { avatarUrl };
-    return this.model.findOneAndUpdate(q, op);
+    const { nModified } = await this.model.updateOne(q, op);
+    return nModified;
   }
 }
 

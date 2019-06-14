@@ -3,17 +3,20 @@ import Joi from 'joi';
 const yesterday = new Date(Date.now() - 86400000);
 
 const sprintCreationRules = {
-  startsAt: Joi.date().greater(yesterday).required(),
-  endsAt: Joi.date().iso().greater(Joi.ref('startsAt')).required(),
-  reward: Joi.string().allow('')
+  startAt: Joi.date().greater(yesterday).required(),
+  endAt: Joi.date().iso().greater(Joi.ref('startAt')).required(),
+  reward: Joi.string().allow(null),
 };
 
-export const sprintSchemaRules = {
-  startsAt: Joi.date().required(),
-  endsAt: Joi.date().required(),
-  reward: Joi.string().allow(''),
+const sprintSchemaRules = {
+  startAt: Joi.date().required(),
+  endAt: Joi.date().required(),
+  reward: Joi.string().allow(null),
   tasks: Joi.array().items(Joi.string()),
   _id: Joi.string().required(),
 };
 
-export default sprintCreationRules;
+export {
+  sprintCreationRules,
+  sprintSchemaRules,
+};

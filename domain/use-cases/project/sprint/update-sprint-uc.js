@@ -1,12 +1,8 @@
-import Joi from 'joi';
 import { sprintSchemaRules } from '../../../../models/validators/sprint-creation-rules';
-import sprintRepository from '../../../repositories/sprint-repository';
 import permissionsEntity from '../../../entities/permissions-entity';
+import sprintRepository from '../../../repositories/sprint-repository';
+import validate from '../../../entities/validation-entity';
 import { SprintErr } from '../../../errors/customError';
-
-async function validate(payload) {
-  return Joi.validate(payload, sprintSchemaRules);
-}
 
 /**
  * Updates Sprint information
@@ -18,7 +14,7 @@ async function validate(payload) {
  * - Sprint dates can not be edited once created.
  */
 async function updateSprintUC(uuid, projectId, sprint) {
-  await validate(sprint);
+  await validate(sprint, sprintSchemaRules);
   const updateSuccess = await sprintRepository.updateSprint(uuid, projectId, sprint);
 
   if (!updateSuccess) {

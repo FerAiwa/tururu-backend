@@ -1,5 +1,9 @@
+import { projectCreationRules } from '../../../../models/validators/project-rules';
+import validate from '../../../entities/validation-entity';
 import projectRepository from '../../../repositories/project-repository';
+import sprintRepository from '../../../repositories/sprint-repository';
 import accountRepository from '../../../repositories/account-repository';
+
 /** Returns a basic project presset */
 function generateStarterProject(uuid, { name, categories, startAt, deadline }) {
   return {
@@ -16,20 +20,25 @@ function generateStarterProject(uuid, { name, categories, startAt, deadline }) {
 }
 
 /**
- * Stores a new project, and adds the generated id to the user´s project list.
+ * Creates a new project, and adds the generated id to the user´s project list.
  * @param {string} uuid User uuiud
- * @param {Project} project Basic project data.
+ * @param {Object} projectData Basic project data. { name, startAt, deadline }
+ * @rules
+ * - Projects must have at least 1 day duration.
+ * - Default project sprint duration is 1 week.
  */
-async function createProjectUC(uuid, projectData) {
-  // add joi validation: Rules similar to sprint dates.
-  const newProject = generateStarterProject(uuid, projectData);
-  if (!newProject) throw new Error('invalid input');
+async function createProjectUC(uuid, projectConfig) {
+  await validate(projectConfig, projectCreationRules);
 
-  const { _id } = await projectRepository.createProject(newProject);
+  const projectPresset = generateStarterProject(uuid, projectConfig);
 
-  await accountRepository.addProjectId(uuid, _id);
+  const { _id } = await projectRepository.createProject(projectPresset);
 
-  return _id;
+  await sprintRepository.createSprint(uuid, _id);
+
+  await accountRepository.addProjectIdToUserAccount(uuid, _id);
+
+  return _id; // location
 }
 
 export default createProjectUC;

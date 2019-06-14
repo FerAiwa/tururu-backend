@@ -54,17 +54,17 @@ function getTasksStats({ tasks }) {
  */
 function getWorkTimeTotals(project) {
   const { workSessions } = project;
-  const summEllapsedTime = (acc, { ellapsedTime }) => acc + (ellapsedTime);
+  const summWorkSessionsTime = (acc, { ellapsedTime }) => acc + ellapsedTime;
 
   const activeSprint = project.activeSprint && project.sprints
-    .find(x => `${x._id}` === `${project.activeSprint}`);
+    .find(x => x._id.toString() === project.activeSprint.toString());
 
   const projectTime = workSessions
-    .reduce(summEllapsedTime, 0);
+    .reduce(summWorkSessionsTime, 0);
 
   const sprintTime = workSessions
-    .filter(ws => ws.startedAt >= activeSprint.startsAt)
-    .reduce(summEllapsedTime, 0);
+    .filter(ws => ws.startedAt >= activeSprint.startAt)
+    .reduce(summWorkSessionsTime, 0);
 
   return {
     project: projectTime,
@@ -81,8 +81,8 @@ function getDayStats({ startAt, deadline }, activeSprint) {
   const raw = {
     projectTotal: getDayDifference(startAt, deadline),
     projectEllapsed: getDayDifference(startAt, new Date(Date.now())),
-    sprintTotal: getDayDifference(activeSprint.startsAt, activeSprint.endsAt),
-    sprintEllapsed: getDayDifference(new Date(Date.now()), activeSprint.endsAt),
+    sprintTotal: getDayDifference(activeSprint.startAt, activeSprint.endAt),
+    sprintEllapsed: getDayDifference(new Date(Date.now()), activeSprint.endAt),
   };
 
   const computed = {
@@ -124,8 +124,7 @@ function getPerformanceStats(days, tasks) {
 function getProjectStats(project) {
   // Using the _id gets the active sprint data from sprints array
   const activeSprint = project.activeSprint && project.sprints
-    .find(x => `${x._id}` === `${project.activeSprint}`);
-
+    .find(x => x._id.toString() === project.activeSprint.toString());
   const raw = {
     tasks: getTasksStats(project),
     days: getDayStats(project, activeSprint),

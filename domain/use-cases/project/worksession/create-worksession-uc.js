@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import accountRepository from '../../../repositories/account-repository';
 import workSessionRepository from '../../../repositories/worksession-repository';
 import permissionsEntity from '../../../entities/permissions-entity';
 
@@ -16,12 +17,12 @@ async function validate(payload) {
  * - A task can´t be used by two users at the same time.
  */
 async function createWorkSessionUC(uuid, projectId, taskId) {
-  // SHOULD NOT let createWorksession if task is busy or user has a session open.
-  console.log('creating ws', taskId);
   await validate({ _id: taskId });
 
+  const [userData] = await accountRepository.getUserPublicData(uuid);
+  console.log(userData);
   const workSession = await workSessionRepository
-    .createWorkSession(uuid, projectId, taskId);
+    .createWorkSession(userData, projectId, taskId);
 
   if (!workSession) {
     await permissionsEntity.checkReadPermissions(uuid, projectId);

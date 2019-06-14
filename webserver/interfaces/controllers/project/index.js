@@ -1,13 +1,14 @@
 /** Barrel that contains all the controllers for Project route */
 import addAdmin from './admins/add-admin-ct';
-import addUser from './users/add-user-ct';
 import createProject from './project/create-project-ct';
 import createSprint from './sprint/create-sprint-ct';
 import createTasks from './tasks/create-tasks-ct';
 import getProject from './project/get-projec-ct';
+import getActiveSessions from './worksession/get-active-sessions-ct';
 import getAdmins from './admins/get-admins-ct';
 import getTasks from './tasks/get-tasks-ct';
 import getUsers from './users/get-users-ct';
+import inviteUser from './users/invite-user-ct';
 import removeAdmin from './admins/remove-admin-ct';
 import removeUser from './users/remove-user-ct';
 import startWorkSession from './worksession/start-worksession-ct';
@@ -18,14 +19,15 @@ import uploadBanner from './project/upload-banner-ct';
 
 export {
   addAdmin,
-  addUser,
   createProject,
   createSprint,
   createTasks,
+  getActiveSessions,
   getAdmins,
   getProject,
   getTasks,
   getUsers,
+  inviteUser,
   startWorkSession,
   stopWorkSession,
   removeAdmin,

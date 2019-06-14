@@ -38,7 +38,7 @@ async function createAccount({ name, email, password }) {
     throw (e);
   }
 
-  await emailService.sendEmailRegistration(email, userData.uuid);
+  await emailService.sendEmailRegistration(email, userData.verificationCode);
 }
 
 export default createAccount;

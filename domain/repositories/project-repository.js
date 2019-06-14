@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import MongoRepository from './mongo-repo';
-import { Project } from '../../models';
+import { Project, ProjectInvitation } from '../../models';
 
 export class ProjectRepository extends MongoRepository {
   constructor() {
@@ -77,24 +77,63 @@ export class ProjectRepository extends MongoRepository {
 
 
   // PERMISSIONS ------------------------------------------
-  /**
-   * Adds a existing user to a project users set.
+  async generateInvitation({ uuid, projectId, targetUser }) {
+    const invitation = new ProjectInvitation({
+      author: uuid,
+      project: projectId,
+      sendTo: targetUser,
+      createdAt: Date.now(),
+      confirmedAt: null,
+      rejectedAt: null,
+    });
+
+    const q = {
+      ...this.getAdminsQuery(projectId, uuid),
+      users: { $nin: [targetUser] }, // avoid sending to a user that is already in the project
+    };
+
+    const op = {
+      $addToSet: { invitations: invitation },
+    };
+
+    const { nModified } = await this.model.updateOne(q, op);
+    return nModified ? invitation : null;
+  }
+
+  /** 
+   * Adds a invited user to the project.
    */
-  async addUser({ uuid, projectId, targetUser }) {
-    const q = this.getAdminsQuery(projectId, uuid);
-    const op = { $addToSet: { users: targetUser } };
+  async confirmInvitation({ uuid, projectId }) {
+    const q = {
+      _id: projectId,
+      'invitations.sendTo': uuid,
+    };
+    const op = {
+      'invitations.$.confirmedAt': Date.now(),
+      $addToSet: { users: uuid },
+    };
 
-    // If n=1 & nModifed=0; user was already in the set.
-    const { n } = await this.model.updateOne(q, op);
+    const { nModified } = await this.model.updateOne(q, op);
+    return nModified;
+  }
 
-    return n;
+  async rejectInvitation({ uuid, projectId }) {
+    const q = {
+      _id: projectId,
+      'invitations.sendTo': uuid,
+    };
+    const op = {
+      'invitations.$.rejectedAt': Date.now(),
+    };
+    const { nModified } = await this.model.updateOne(q, op);
+    return nModified;
   }
 
   /**
   * Remove user from a project users set.
   */
-  async removeUser({ uuid, projectId, targetUser }) {
-    const q = this.getAdminsQuery(projectId, uuid);
+  async removeUser({ targetUser, projectId }) {
+    // const q = this.getAdminsQuery(projectId, uuid);
     const op = {
       $pull: {
         users: targetUser,
@@ -102,7 +141,7 @@ export class ProjectRepository extends MongoRepository {
       },
     };
     // If n=1 & nModifed=0; user was already in the set.
-    const { n } = await this.model.updateOne(q, op);
+    const { n } = await this.model.updateOne({ targetUser }, op);
 
     return n;
   }

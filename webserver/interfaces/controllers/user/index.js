@@ -1,7 +1,12 @@
 import uploadAvatar from './upload-avatar-ct';
-import getProjects from './get-projects-ct';
+import getUserInfo from './get-user-info-ct';
+import searchUsers from './search-users-ct';
+import manageProjectInvitation from './manage-invitation-ct';
 
+// User controllers
 export {
+  getUserInfo,
+  manageProjectInvitation,
+  searchUsers,
   uploadAvatar,
-  getProjects,
 };

@@ -1,22 +1,31 @@
 /* eslint-disable no-console */
 import socketIO from 'socket.io';
+import socketAuth from '../middlewares/socket-auth';
 
-/** Event flow.
- * Front:
- * - User GET /project/:id
- * - event 'joinProjectRoom'
- * Back :
- * - listener: 'joinProjectRoom
- * - validation: isProjectUser && projectId exists
- * - .join(projectId)
- * - client.broadcast.to(projectId)
- */
+import invitationEmitter from './invitation-event';
+import { storeConnection, deleteConnection } from '../../domain/use-cases/connection';
+
 /**
  * @param {socketIO.Server} io The server instance socketIO is binded to
  */
 export default function (io) {
+  // My Node events
+  invitationEmitter.on('notifyInvitation', (socketId, invitation) => {
+    console.log('client-socket', socketId);
+    io.to(socketId).emit('notification', invitation);
+  });
+
+  io.use(socketAuth);
   io.on('connection', (client) => {
-    // Client event listeners
+    const { uuid } = client.claims;
+    // Store the uuid associated with socketId, to deliver change notifications later.
+    storeConnection(uuid, client.id)
+      .then(() => console.log('stored'))
+      .catch(() => client.disconnect());
+
+    client.on('getUserPublicData', (userUuid) => {
+    });
+
     client.on('joinProjectRoom', (userData) => {
       const { uuid, projectId } = userData;
       // is user allowed?

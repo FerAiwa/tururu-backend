@@ -56,6 +56,7 @@ async function checkAdminPermissions(uuid, projectId) {
 const permissionsEntity = {
   checkReadPermissions,
   checkAdminPermissions,
+  canUserRead,
 };
 
 export default permissionsEntity;

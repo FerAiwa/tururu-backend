@@ -1,11 +1,11 @@
-import addUserUC from './permissions/add-user-uc';
+import inviteUserUC from './permissions/invite-user-uc';
 import createProject from './project/create-project-uc';
 import createSprint from './sprint/create-sprint-uc';
 import createTasks from './task/createTasks-uc';
 import createWorkSessionUC from './worksession/create-worksession-uc';
 import finishWorkSession from './worksession/finish-worksession-uc';
 import getProject from './project/get-project-uc';
-import getWorksession from './worksession/get-worksession-uc';
+import getActiveWorkSessions from './worksession/get-active-worksessions-uc';
 import getTasks from './task/get-tasks-uc';
 import promoteUserUC from './permissions/promote-user-uc';
 import removeAdminUC from './permissions/remove-admin-uc';
@@ -16,7 +16,7 @@ import getTeamUC from './team/get-team-uc';
 import uploadBanner from './project/upload-banner-uc';
 
 const permissions = {
-  addUserUC,
+  inviteUserUC,
   promoteUserUC,
   removeAdminUC,
   removeUserUC,
@@ -42,7 +42,7 @@ const taskUC = {
 const workSessionUC = {
   createWorkSessionUC,
   finishWorkSession,
-  getWorksession,
+  getActiveWorkSessions,
 };
 
 const teamUC = {

@@ -8,6 +8,12 @@ function projectErrorHandler(err, req, res, next) {
   console.log({ code, message, context });
   let status = 500;
 
+  if (code === 'NOTFOUND') res.status(404).send();
+
+  if (err.context === 'authentication') {
+    return res.status(401).send(err);
+  }
+
   if (context === 'project') {
     // CODE     STATUS    DESCRIPTION 💩
     // NOTFOUND  404

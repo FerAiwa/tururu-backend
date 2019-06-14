@@ -15,7 +15,7 @@ class TaskRepository extends ProjectRepository {
       },
     };
 
-    return this.updateOne(q, op);
+    return this.model.updateOne(q, op);
   }
 
   /**

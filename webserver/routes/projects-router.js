@@ -27,12 +27,13 @@ router.route('/:projectId/sprint')
   .patch(projectCT.updateSprint);
 
 router.route('/:projectId/worksession')
+  .get(projectCT.getActiveSessions)
   .post(projectCT.startWorkSession)
   .patch(projectCT.stopWorkSession);
 
 router.route('/:projectId/users')
   .get(projectCT.getUsers)
-  .post(projectCT.addUser)
+  .post(projectCT.inviteUser)
   .delete(projectCT.removeUser);
 
 router.route('/:projectId/admins')

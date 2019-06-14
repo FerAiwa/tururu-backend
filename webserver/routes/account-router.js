@@ -8,8 +8,8 @@ const router = express.Router();
 
 router.get('/activate', activateAccount);
 router.post('/login', login);
-router.route('/logout');
 router.post('/signup', createAccount);
+// router.route('/logout');
 
 router.use(JoiErrorMapper, accountErrorHandler);
 
