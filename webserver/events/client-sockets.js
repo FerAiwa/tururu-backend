@@ -17,6 +17,7 @@ export default function (io) {
 
   io.use(socketAuth);
   io.on('connection', (client) => {
+    console.log('client connected');
     const { uuid } = client.claims;
     // Store the uuid associated with socketId, to deliver change notifications later.
     storeConnection(uuid, client.id)
@@ -59,6 +60,11 @@ export default function (io) {
     client.on('sendMessage', (data) => {
       const { message } = data;
       client.broadcast.emit('teamMemberMessage', message);
+    });
+
+    // ERROR MANAGER
+    io.on('error', (err) => {
+      console.log('error manager', err);
     });
   });
 }

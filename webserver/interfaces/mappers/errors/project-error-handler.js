@@ -2,7 +2,7 @@
  * Sets the HTTP status code for a Custom Error and sends a user-friendly error message.
  */
 function projectErrorHandler(err, req, res, next) {
-  console.log(err);
+  console.log(err.message);
   if (!err.code) return res.status(500).send();
   const { code, message, context } = err;
   console.log({ code, message, context });
@@ -10,7 +10,7 @@ function projectErrorHandler(err, req, res, next) {
 
   if (code === 'NOTFOUND') res.status(404).send();
 
-  if (err.context === 'authentication') {
+  if (err.context === 'auth') {
     return res.status(401).send(err);
   }
 

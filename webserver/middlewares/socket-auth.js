@@ -6,7 +6,9 @@ import authenticateUC from '../../domain/use-cases/account/authenticate-uc';
  */
 function socketAuth(socket, next) {
   try {
-    const authorization = socket.handshake.headers && socket.handshake.headers.authorization;
+    // console.log(socket.handshake);
+    const authorization = socket.handshake.headers
+      && socket.handshake.headers.authorization;
 
     const token = authorization && authorization.startsWith('Bearer') && authorization.split(' ')[1];
 
@@ -16,6 +18,8 @@ function socketAuth(socket, next) {
     socket.claims = claims;
     next();
   } catch (e) {
+    console.log('Auth failed');
+    // Error sent to socket error handler
     next(e);
   }
 }

@@ -11,7 +11,7 @@ async function uploadAvatar(req, res, next) {
     if (!file || !file.buffer) {
       return res.status(400).send();
     }
-    const location = await userUC.uploadAvatar(uuid, file);
+    const location = await userUC.uploadAvatar(uuid, file, res);
     res.header('Location', location);
     return res.status(201).send();
   } catch (e) {

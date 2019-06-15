@@ -3,12 +3,14 @@ import invitationEmitter from '../../../../events/invitation-event';
 
 /**
  * Sends a invitation to the project to a user.
+ * @param {Object} req.params projectId
+ * @param {Object} req.query targetUser The invited uuid
  */
 async function inviteUser(req, res, next) {
   const { uuid } = req.claims;
-  const { projectId } = req.params;
-  const { targetUser } = req.body;
   try {
+    const { projectId } = req.params;
+    const { targetUser } = req.body;
     const invitation = await permissions.inviteUserUC({ uuid, projectId, targetUser });
 
     invitationEmitter.emit('invitationSent', targetUser, invitation);
