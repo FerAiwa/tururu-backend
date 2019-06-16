@@ -1,10 +1,11 @@
 {
-  "name": "api",
+  "name": "tururu-backend",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon --exec babel-node ./webserver/server.js"
+    "start": "node --exec babel-node ./webserver/server.js",
+    "start-dev": "nodemon --exec babel-node ./webserver/server.js"
   },
   "keywords": [],
   "author": "",
