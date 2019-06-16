@@ -36,7 +36,7 @@ clientSocket(io);
 
 /** Stablish db connection before starting the server */
 async function init() {
-  const port = process.env.SERVER_PORT || 3000;
+  const port = process.env.PORT || 3000;
   try {
     await getMongooseConnection();
   } catch (e) {

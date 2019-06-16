@@ -1,3 +1,6 @@
+## Domin 16/06
+  - Updated package dependencies for production/dev enviroments.
+
 ## Vie 14/06
   - Implemented EventEmitter & socket notification for project invitations.
     The event is fired at the inviteUser controlled.
