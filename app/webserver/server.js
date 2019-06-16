@@ -23,7 +23,7 @@ const io = socketIO(server, {
   handlePreflightRequest: (req, res) => {
     const headers = {
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Access-Control-Allow-Origin': process.env.ORIGIN, // '*'
+      'Access-Control-Allow-Origin': process.env.ALLOW_ORIGIN, // '*'
       'Access-Control-Allow-Credentials': true,
     };
     res.writeHead(200, headers);
