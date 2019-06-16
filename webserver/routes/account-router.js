@@ -9,7 +9,6 @@ const router = express.Router();
 router.get('/activate', activateAccount);
 router.post('/login', login);
 router.post('/signup', createAccount);
-// router.route('/logout');
 
 router.use(JoiErrorMapper, accountErrorHandler);
 

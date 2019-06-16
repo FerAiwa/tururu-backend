@@ -10,7 +10,7 @@ import { storeConnection, deleteConnection } from '../../domain/use-cases/connec
  */
 export default function (io) {
   // My Node events
-  invitationEmitter.on('notifyInvitation', (socketId, invitation) => {
+  invitationEmitter.on('sendInviteNotification', (socketId, invitation) => {
     console.log('client-socket', socketId);
     io.to(socketId).emit('notification', invitation);
   });

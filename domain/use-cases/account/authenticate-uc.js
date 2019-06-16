@@ -10,7 +10,7 @@ function authenticateUC(token) {
     };
     return claims;
   } catch (e) {
-    throw new CustomErr('NOAUTH', 'The provided token is not valid, login to get a new one', 'authentication');
+    throw new CustomErr('NOAUTH', 'The provided token is not valid, login to get a new one', 'auth');
   }
 }
 

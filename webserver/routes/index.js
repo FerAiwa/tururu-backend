@@ -6,8 +6,8 @@ import userRouter from './user-router';
 export default function loadRouters(app) {
   [
     { path: '/account', router: accountRouter },
-    { path: '/user', router: userRouter },
     { path: '/projects', router: projectsRouter },
+    { path: '/user', router: userRouter },
   ]
     .forEach(route => app.use(route.path, route.router));
 }

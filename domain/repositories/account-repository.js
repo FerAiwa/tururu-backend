@@ -64,8 +64,9 @@ export class AccountRepository {
    * @param {String} query
    */
   async searchUsers(query) {
-    const q = { $text: { $search: query } };
+    const q = { $text: { $search: query.toString() } };
     const scoreSearch = { score: { $meta: 'textScore' } };
+
     return this.model.find(q, scoreSearch).sort(scoreSearch).lean();
   }
 

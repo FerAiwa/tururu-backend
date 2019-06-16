@@ -14,13 +14,14 @@ import { NotFoundErr, ActionNotAllowErr } from '../../../errors/customError';
  * - The request must come from project admin.
  * - User must exist.
  */
-async function addUserUC({ uuid, projectId, targetUser }) {
+async function inviteUserUC({ uuid, projectId, targetUser }) {
   await validate({ project: projectId, sendTo: targetUser }, projectInvitationRules);
 
   if (uuid === targetUser) {
     throw ActionNotAllowErr('Self half five? You can´t invite youself to a project!'); // 403
   }
 
+  // Project invitations are permanent.
   const invitation = await projectRepository
     .generateInvitation({ uuid, projectId, targetUser });
   if (!invitation) {
@@ -29,14 +30,16 @@ async function addUserUC({ uuid, projectId, targetUser }) {
     await permissionsEntity.checkAdminPermissions(uuid, projectId);
   }
 
+  // User invitation copy are removed as soon as answered
   const isUserUpdated = await accountRepository
     .addProjectInvitation(targetUser, invitation);
 
   if (!isUserUpdated) {
+    // or user doesnt exist...!
     throw ActionNotAllowErr('The user is already in the project...');
   }
-
-  return invitation;
+  const { _doc } = invitation;
+  return _doc;
 }
 
-export default addUserUC;
+export default inviteUserUC;

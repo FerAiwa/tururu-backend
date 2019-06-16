@@ -20,7 +20,6 @@ const userMappers = {
  */
 async function searchUsersUC(q) {
   await validate({ q }, searchUserQueryRules);
-
   const users = await accountRepository.searchUsers(q);
 
   return users.map(userMappers.minInfo);

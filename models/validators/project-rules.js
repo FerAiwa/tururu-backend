@@ -7,7 +7,6 @@ const startAt = Joi.date().greater(yesterday).required();
 const deadline = Joi.date().iso().greater(Joi.ref('startAt')).required();
 const reward = Joi.string().allow('');
 
-
 const projectCreationRules = {
   name,
   startAt,

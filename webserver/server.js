@@ -41,6 +41,7 @@ async function init() {
     await getMongooseConnection();
   } catch (e) {
     console.error('Server couldn´t connect to db');
+    console.log(e.message);
     process.exit(1);
   }
   server.listen(port, () => console.log(`ITS ALIVE!! Server running at port ${port}`));

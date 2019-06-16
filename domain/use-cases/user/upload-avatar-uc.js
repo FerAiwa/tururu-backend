@@ -16,11 +16,13 @@ async function uploadAvatarUC(uuid, file) {
 
   const avatarConfig = {
     public_id: uuid,
-    resource_type: 'raw',
+    resource_type: 'image',
     width: 200,
     height: 200,
     format: 'jpg',
-    crop: 'limit',
+    crop: 'fill',
+    gravity: 'faces',
+    invalidate: true, // to force update on a already fetched image after a short period of time
   };
 
   try {
@@ -28,10 +30,12 @@ async function uploadAvatarUC(uuid, file) {
       .upload_stream(
         avatarConfig,
         async (err, result) => {
-          if (err) throw err; // 401 err most likely
-          // Store avatar URL in the user´s account.
+          if (err) throw err; // 400 err most likely
           const { secure_url: secureUrl } = result;
-          const isUserUpdated = await accountRepository.setUserAvatar(uuid, secureUrl);
+          // Store avatar URL in the user´s account.
+          const isUserUpdated = await accountRepository
+            .setUserAvatar(uuid, secureUrl);
+
           if (!isUserUpdated) return Error('Db update failed'); // 500
           return secureUrl;
         }
