@@ -7,6 +7,10 @@ class CustomErr extends Error {
   }
 }
 
+function AuthErr(code, message, context) {
+  return new CustomErr({ code, message, context });
+}
+
 function ProjectErr(code, message = null) {
   return new CustomErr({ code, message, context: 'project' });
 }
@@ -42,6 +46,7 @@ function NotFoundErr(message, resourceType = 'project', context = null) {
 }
 
 export {
+  AuthErr,
   ActionNotAllowErr,
   PermissionErr,
   ProjectErr,

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { CustomErr } from '../../errors/customError';
+import { AuthErr } from '../../errors/customError';
 
 function authenticateUC(token) {
   const secret = process.env.WEBTOKEN_SECRET;
@@ -10,7 +10,7 @@ function authenticateUC(token) {
     };
     return claims;
   } catch (e) {
-    throw new CustomErr('NOAUTH', 'The provided token is not valid, login to get a new one', 'auth');
+    throw AuthErr('NOAUTH', 'The provided token is no longer valid, login to get a new one', 'authentication');
   }
 }
 

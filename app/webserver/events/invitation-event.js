@@ -16,7 +16,6 @@ async function notifyUserInvitation(uuid, invitation) {
     if (userConnection && userConnection.socketId) {
       // Destinatary socket
       const { socketId } = userConnection;
-
       // Sender
       const [authorData] = await accountRepository.getUserPublicData(invitation.author);
 
@@ -33,6 +32,23 @@ async function notifyUserInvitation(uuid, invitation) {
   }
 }
 
-invitationEmitter.on('invitationSent', notifyUserInvitation);
+async function notifyNewTeamMember(uuid, projectId) {
+  try {
+    const [authorData] = await accountRepository.getUserPublicData(uuid);
+    const teamNotification = {
+      type: 'new member',
+      user: authorData,
+      message: 'joined the team',
+    };
+
+    invitationEmitter.emit('notifyNewTeamMember', projectId, teamNotification);
+  } catch (e) {
+    console.log('notifyTeamMember err', e.message);
+  }
+}
+
+invitationEmitter.on('invitationCreated', notifyUserInvitation);
+
+invitationEmitter.on('invitationAccepted', notifyNewTeamMember);
 
 export default invitationEmitter;

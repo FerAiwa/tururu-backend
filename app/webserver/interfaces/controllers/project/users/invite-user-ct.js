@@ -13,8 +13,7 @@ async function inviteUser(req, res, next) {
     const { targetUser } = req.body;
     const invitation = await permissions.inviteUserUC({ uuid, projectId, targetUser });
 
-    invitationEmitter.emit('invitationSent', targetUser, invitation);
-    console.log('invitation sent fired');
+    invitationEmitter.emit('invitationCreated', targetUser, invitation);
 
     return res.status(201).send();
   } catch (e) {

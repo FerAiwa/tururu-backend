@@ -18,7 +18,7 @@ async function inviteUserUC({ uuid, projectId, targetUser }) {
   await validate({ project: projectId, sendTo: targetUser }, projectInvitationRules);
 
   if (uuid === targetUser) {
-    throw ActionNotAllowErr('Self half five? You can´t invite youself to a project!'); // 403
+    throw ActionNotAllowErr('Self hit five? You can´t invite youself to a project!'); // 403
   }
 
   // Project invitations are permanent.

@@ -10,10 +10,14 @@ import { storeConnection, deleteConnection } from '../../domain/use-cases/connec
  */
 export default function (io) {
   // My Node events
-  invitationEmitter.on('sendInviteNotification', (socketId, invitation) => {
-    console.log('client-socket', socketId);
-    io.to(socketId).emit('notification', invitation);
+  invitationEmitter.on('sendInviteNotification', (clientSocketId, invitation) => {
+    io.to(clientSocketId).emit('notification', invitation);
   });
+
+  invitationEmitter.on('notifyNewTeamMember', (projectId, notification) => {
+    io.to(projectId).emit('notifyNewTeamMember', notification);
+  });
+
 
   io.use(socketAuth);
   io.on('connection', (client) => {
@@ -24,22 +28,14 @@ export default function (io) {
       .then(() => console.log('stored'))
       .catch(() => client.disconnect());
 
-    client.on('getUserPublicData', (userUuid) => {
-    });
-
-    client.on('joinProjectRoom', (userData) => {
-      const { uuid, projectId } = userData;
-      // is user allowed?
+    client.on('joinProjectRoom', (projectId) => {
       if (true) {
-        console.log('user joined room', userData);
-        client.join(projectId);
-        client.broadcast.to(projectId).emit('connectionNotification', { uuid, message: `${uuid} connected!` });
-        // console.log(client.rooms);
+        console.log(`user ${uuid} socket ${client.id} joined room ${projectId}`);
+        client.leaveAll();
+        client.join([client.id, projectId]);
+        // client.broadcast.to(projectId)
+        // .emit('connectionNotification', { uuid, message: `${uuid} connected!` });
       }
-    });
-
-    client.on('connectProject', (user) => {
-      client.broadcast.emit('connectionNotification', { id: client.id, user, message: 'I am groot' });
     });
 
     client.on('workSessionStarted', (workSession) => {
@@ -55,11 +51,6 @@ export default function (io) {
       // notify userleft.
       // user was working?
       // system close worksession
-    });
-
-    client.on('sendMessage', (data) => {
-      const { message } = data;
-      client.broadcast.emit('teamMemberMessage', message);
     });
 
     // ERROR MANAGER
