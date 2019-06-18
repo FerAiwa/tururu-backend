@@ -72,7 +72,8 @@ export class ProjectRepository extends MongoRepository {
    * @return {Project}
    */
   async findProjectById(_id) {
-    return this.model.findById(_id, '- invitations').lean();
+    const projection = { invitations: 0 };
+    return this.model.findById(_id, projection).lean();
   }
 
 
