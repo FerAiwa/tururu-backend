@@ -36,7 +36,7 @@ async function notifyNewTeamMember(uuid, projectId) {
   try {
     const [authorData] = await accountRepository.getUserPublicData(uuid);
     const teamNotification = {
-      type: 'new member',
+      type: 'member state',
       user: authorData,
       message: 'joined the team',
     };

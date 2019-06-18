@@ -72,7 +72,7 @@ export class ProjectRepository extends MongoRepository {
    * @return {Project}
    */
   async findProjectById(_id) {
-    return this.model.findById(_id).lean();
+    return this.model.findById(_id, '- invitations').lean();
   }
 
 

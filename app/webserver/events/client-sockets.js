@@ -14,8 +14,11 @@ export default function (io) {
     io.to(clientSocketId).emit('notification', invitation);
   });
 
-  invitationEmitter.on('notifyNewTeamMember', (projectId, notification) => {
-    io.to(projectId).emit('notifyNewTeamMember', notification);
+  // type: 'member state',
+  // user: authorData,
+  // message: 'joined the team',
+  invitationEmitter.on('notifyNewTeamMember', (projectId, teamNotification) => {
+    io.to(projectId).emit('notifyNewTeamMember', teamNotification);
   });
 
 
