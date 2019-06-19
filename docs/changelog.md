@@ -1,4 +1,7 @@
-## Domin 16/06
+## Mie 19/06
+  - Added PATCH task endpoint, controller, UC and repo actions.
+
+## Dom 16/06
   - Updated package dependencies for production/dev enviroments.
 
 ## Vie 14/06
