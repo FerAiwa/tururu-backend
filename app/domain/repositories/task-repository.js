@@ -27,6 +27,36 @@ class TaskRepository extends ProjectRepository {
 
     return this.model.findOne(q, projection).lean();
   }
+
+  async markTaskAsPending(uuid, projectId, taskId) {
+    const q = {
+      ...this.getUsersQuery(projectId, uuid),
+      'tasks._id': taskId,
+    };
+    const op = {
+      $set: { 'tasks.$.completedAt': null },
+    };
+
+    const { nModified } = await this.model.updateOne(q, op);
+
+
+    return nModified;
+  }
+
+  async markTaskAsDone(uuid, projectId, taskId) {
+    const q = {
+      ...this.getUsersQuery(projectId, uuid),
+      'tasks._id': taskId,
+    };
+    const op = {
+      $set: {
+        'tasks.$.completedAt': new Date(Date.now()),
+      },
+    };
+
+    const { nModified } = await this.model.updateOne(q, op);
+    return nModified;
+  }
 }
 
 export default new TaskRepository();

@@ -11,6 +11,7 @@ import getUsers from './users/get-users-ct';
 import inviteUser from './users/invite-user-ct';
 import removeAdmin from './admins/remove-admin-ct';
 import removeUser from './users/remove-user-ct';
+import setTaskStatus from './tasks/set-task-status-ct';
 import startWorkSession from './worksession/start-worksession-ct';
 import stopWorkSession from './worksession/end-worksession-ct';
 import updateSprint from './sprint/update-sprint-ct';
@@ -28,6 +29,7 @@ export {
   getTasks,
   getUsers,
   inviteUser,
+  setTaskStatus,
   startWorkSession,
   stopWorkSession,
   removeAdmin,

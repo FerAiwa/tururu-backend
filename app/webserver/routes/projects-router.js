@@ -20,7 +20,8 @@ router.route('/:projectId/banner')
 
 router.route('/:projectId/tasks')
   .get(projectCT.getTasks)
-  .post(projectCT.createTasks);
+  .post(projectCT.createTasks)
+  .patch(projectCT.setTaskStatus);
 
 router.route('/:projectId/sprint')
   .post(projectCT.createSprint)
