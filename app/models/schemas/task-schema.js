@@ -6,7 +6,7 @@ const taskSchema = new Schema({
   categories: [String],
   active: { type: Boolean },
   completed: { type: Boolean },
-  createdAt: { type: Date, default: Date.now() },
+  createdAt: { type: Date, default: Date.now },
   completedAt: Date,
   deletedAt: Date,
   ellapsedTime: { type: Number, default: 0 },

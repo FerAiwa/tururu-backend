@@ -1,4 +1,3 @@
-import { projectIdRule } from '../../../../models/validators/project-rules';
 import sprintCreationRules from '../../../../models/validators/sprint-creation-rules';
 import permissionsEntity from '../../../entities/permissions-entity';
 import { SprintErr, ActionNotAllowErr } from '../../../errors/customError';
@@ -15,7 +14,7 @@ import validate from '../../../entities/validation-entity';
  * - Requires user to have admin permissions.
 */
 async function createSprintUC(uuid, projectId, sprintData) {
-  await validate({ ...sprintData, projectId }, { ...sprintCreationRules, ...projectIdRule });
+  await validate({ ...sprintData, projectId }, sprintCreationRules);
 
   const activeSprint = await sprintRepository.findActiveSprint(uuid, projectId);
   if (activeSprint) {

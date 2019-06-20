@@ -1,5 +1,7 @@
+import { projectIdRule } from '../../../../models/validators/project-rules';
 import projectRepository from '../../../repositories/project-repository';
 import accountRepository from '../../../repositories/account-repository';
+import validate from '../../../entities/validation-entity';
 
 function getUserRole(uuid, project) {
   if (project.admins.includes(uuid)) return 'admin';
@@ -15,6 +17,8 @@ function getUserRole(uuid, project) {
  * @returns  {Object} [ {name, avatarUrl, uuid, role} ]
  */
 async function getTeamUC(uuid, projectId) {
+  await validate({ projectId }, projectIdRule);
+
   const project = await projectRepository.findProjectById(projectId);
   const { users } = project;
 

@@ -30,8 +30,8 @@ class TaskRepository extends ProjectRepository {
 
   async markTaskAsPending(uuid, projectId, taskId) {
     const q = {
-      ...this.getUsersQuery(projectId, uuid),
-      'task._id': taskId,
+      _id: projectId,
+      'tasks._id': taskId,
     };
     const op = {
       $unset: {
@@ -39,18 +39,15 @@ class TaskRepository extends ProjectRepository {
       },
     };
 
-
     const { nModified } = await this.model.updateOne(q, op);
-    console.log('pending', q, nModified);
     return nModified;
   }
 
   async markTaskAsDone(uuid, projectId, taskId) {
     const q = {
-      ...this.getUsersQuery(projectId, uuid),
-      'task._id': taskId,
+      _id: projectId,
+      'tasks._id': taskId,
     };
-    // 'tasks._id': taskId,
     const op = {
       $set: {
         'tasks.$.completedAt': new Date(Date.now()),
@@ -58,7 +55,6 @@ class TaskRepository extends ProjectRepository {
     };
 
     const { nModified } = await this.model.updateOne(q, op);
-    console.log('done', q, nModified);
     return nModified;
   }
 }

@@ -1,11 +1,8 @@
-import Joi from 'joi';
+import { createWorkSessionRules } from '../../../../models/validators/worksession-rules';
 import accountRepository from '../../../repositories/account-repository';
 import workSessionRepository from '../../../repositories/worksession-repository';
 import permissionsEntity from '../../../entities/permissions-entity';
-
-async function validate(payload) {
-  return Joi.validate(payload, { _id: Joi.string().required() });
-}
+import validate from '../../../entities/validation-entity';
 
 /**
  * @description When user starts or resumes a task, a new work session will be created
@@ -17,10 +14,10 @@ async function validate(payload) {
  * - A task can´t be used by two users at the same time.
  */
 async function createWorkSessionUC(uuid, projectId, taskId) {
-  await validate({ _id: taskId });
+  await validate({ taskId, projectId }, createWorkSessionRules);
 
   const [userData] = await accountRepository.getUserPublicData(uuid);
-  console.log(userData);
+
   const workSession = await workSessionRepository
     .createWorkSession(userData, projectId, taskId);
 

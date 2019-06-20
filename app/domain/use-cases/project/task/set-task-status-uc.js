@@ -10,7 +10,8 @@ import taskRepository from '../../../repositories/task-repository';
  */
 
 async function setTaskStatusUC({ uuid, projectId, taskId, status }) {
-  await validate({ _id: taskId, status }, setTaskStatusRules);
+  console.log(projectId);
+  await validate({ _id: taskId, status, projectId }, setTaskStatusRules);
 
   console.log(uuid, projectId, 'task', taskId, 'stat', status);
 

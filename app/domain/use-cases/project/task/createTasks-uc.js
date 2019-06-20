@@ -1,6 +1,5 @@
 import { Task } from '../../../../models';
 import { createTaskskRules } from '../../../../models/validators/task-rules';
-import { projectIdRule } from '../../../../models/validators/project-rules';
 import { PermissionErr } from '../../../errors/customError';
 import taskRepository from '../../../repositories/task-repository';
 import validate from '../../../entities/validation-entity';
@@ -15,7 +14,7 @@ import validate from '../../../entities/validation-entity';
  * - Requires user to have admin permissions.
  */
 async function createTasksUC({ uuid, projectId, tasks }) {
-  await validate({ project: projectId, tasks }, { projectIdRule, ...createTaskskRules });
+  await validate({ projectId, tasks }, createTaskskRules);
 
   const newTasks = tasks.map(task => new Task(task));
 

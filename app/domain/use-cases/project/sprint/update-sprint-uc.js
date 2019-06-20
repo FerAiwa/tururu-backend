@@ -1,5 +1,4 @@
 import { sprintSchemaRules } from '../../../../models/validators/sprint-creation-rules';
-import { projectIdRule } from '../../../../models/validators/project-rules';
 import permissionsEntity from '../../../entities/permissions-entity';
 import sprintRepository from '../../../repositories/sprint-repository';
 import validate from '../../../entities/validation-entity';
@@ -15,7 +14,7 @@ import { SprintErr } from '../../../errors/customError';
  * - Sprint dates can not be edited once created.
  */
 async function updateSprintUC(uuid, projectId, sprint) {
-  await validate({ ...sprint, projectId }, { ...sprintSchemaRules, projectIdRule });
+  await validate({ ...sprint, projectId }, sprintSchemaRules);
   const updateSuccess = await sprintRepository.updateSprint(uuid, projectId, sprint);
 
   if (!updateSuccess) {

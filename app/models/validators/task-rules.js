@@ -6,10 +6,15 @@ const name = Joi.string().required();
 
 
 const createTaskskRules = {
+  projectId: Joi.string().required(),
   tasks: Joi.array().items({ name }),
 };
 
-const setTaskStatusRules = { _id, status };
+const setTaskStatusRules = {
+  projectId: Joi.string().required(),
+  _id,
+  status,
+};
 
 export {
   createTaskskRules,

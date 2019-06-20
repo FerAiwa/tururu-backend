@@ -2,6 +2,7 @@ import { projectUC } from '../../../../../domain/use-cases/project';
 
 /**
  * Creates a project and adds the id to the user project list.
+ * @param req  body {name: string, startAt: Date, deadline: Date}
  * @returns projectId
  */
 async function createProject(req, res, next) {

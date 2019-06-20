@@ -131,10 +131,10 @@ export class ProjectRepository extends MongoRepository {
   }
 
   /**
-  * Remove user from a project users set.
+  * Remove user from the project users array.
   */
   async removeUser({ targetUser, projectId }) {
-    // const q = this.getAdminsQuery(projectId, uuid);
+    const q = this.getUsersQuery(projectId, targetUser);
     const op = {
       $pull: {
         users: targetUser,
@@ -142,7 +142,7 @@ export class ProjectRepository extends MongoRepository {
       },
     };
     // If n=1 & nModifed=0; user was already in the set.
-    const { n } = await this.model.updateOne({ targetUser }, op);
+    const { n } = await this.model.updateOne(q, op);
 
     return n;
   }
