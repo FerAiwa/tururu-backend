@@ -1,5 +1,9 @@
 import uuiV4 from 'uuidv4';
+import { verificationRules } from '../../../models/validators/account-rules';
 import accountRepository from '../../repositories/account-repository';
+import validate from '../../entities/validation-entity';
+
+
 import { DeletedCodeErr, ExpiredCodeErr } from '../../errors/account-errors';
 
 function getHourDiference(stringDate) {
@@ -15,6 +19,8 @@ function getHourDiference(stringDate) {
  * - Verification code must exist.
  */
 async function activateAccount(verificationCode) {
+  await validate({ verificationCode }, verificationRules);
+
   const user = await accountRepository.findUserByVerificationCode(verificationCode);
   if (!user) throw DeletedCodeErr();
 

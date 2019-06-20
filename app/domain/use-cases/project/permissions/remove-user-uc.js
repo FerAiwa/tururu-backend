@@ -1,5 +1,7 @@
+import { promotionRules } from '../../../../models/validators/project-invitation-rules';
 import projectRepository from '../../../repositories/project-repository';
 import { NotFoundErr, PermissionErr, ActionNotAllowErr } from '../../../errors/customError';
+import validate from '../../../entities/validation-entity';
 
 function getUserGreatestRole(uuid, project) {
   if (project.owner === uuid) return 'owner';
@@ -21,6 +23,8 @@ function getUserGreatestRole(uuid, project) {
   * - Project owner can´t leave the project.
  */
 async function removeUserUC({ uuid, projectId, targetUser }) {
+  await validate({ project: projectId, targetUser }, promotionRules);
+
   const project = await projectRepository.findProjectById(projectId);
   if (!project) throw NotFoundErr();
 

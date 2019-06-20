@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
 import uuiV4 from 'uuidv4';
 import emailService from '../../email.service';
+import { EmailInUseErr } from '../../errors/account-errors';
 import accountRepository from '../../repositories/account-repository';
 import { registerRules } from '../../../models/validators/account-rules';
 import validate from '../../entities/validation-entity';
-import { EmailInUseErr } from '../../errors/account-errors';
 
 /** Generates additional fields for the userData before sending to repository */
 async function generateUser({ name, password, email }) {

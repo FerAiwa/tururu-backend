@@ -1,12 +1,9 @@
-import Joi from 'joi';
+import { projectIdRule } from '../../../../models/validators/project-rules';
 import sprintCreationRules from '../../../../models/validators/sprint-creation-rules';
 import permissionsEntity from '../../../entities/permissions-entity';
 import { SprintErr, ActionNotAllowErr } from '../../../errors/customError';
 import sprintRepository from '../../../repositories/sprint-repository';
-
-async function validate(payload) {
-  return Joi.validate(payload, sprintCreationRules);
-}
+import validate from '../../../entities/validation-entity';
 
 /**
  * Creates a Sprint instance and stores it in the db.
@@ -18,12 +15,12 @@ async function validate(payload) {
  * - Requires user to have admin permissions.
 */
 async function createSprintUC(uuid, projectId, sprintData) {
+  await validate({ ...sprintData, projectId }, { ...sprintCreationRules, ...projectIdRule });
+
   const activeSprint = await sprintRepository.findActiveSprint(uuid, projectId);
   if (activeSprint) {
     throw ActionNotAllowErr('There is a sprint in course. It must end before creating another.');
   }
-
-  await validate(sprintData);
 
   const newSprint = await sprintRepository.createSprint(projectId, uuid, sprintData);
   if (!newSprint) {

@@ -12,12 +12,16 @@ import taskRepository from '../../../repositories/task-repository';
 async function setTaskStatusUC({ uuid, projectId, taskId, status }) {
   await validate({ _id: taskId, status }, setTaskStatusRules);
 
+  console.log(uuid, projectId, 'task', taskId, 'stat', status);
+
   let isTaskUpdated;
 
   if (status === 'done') {
+    console.log('marking as done');
     isTaskUpdated = await taskRepository.markTaskAsDone(uuid, projectId, taskId);
   }
   if (status === 'undone') {
+    console.log('marking pending');
     isTaskUpdated = await taskRepository.markTaskAsPending(uuid, projectId, taskId);
   }
 

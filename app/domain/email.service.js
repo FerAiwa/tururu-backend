@@ -6,16 +6,23 @@ async function sendEmailRegistration(userEmail, verificationCode) {
   // BUG? For some reason i just can send e-mails if I set the api key everytime...
   sendgridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-  const linkActivacion = `http://localhost:3000/account/activate?verification_code=${verificationCode}`;
+  const linkActivacion = `${process.env.SERVER}/account/activate?verification_code=${verificationCode}`;
+  console.log('sengrid', linkActivacion);
   const msg = {
     to: userEmail,
     from: {
       email: 'feraiwa@sendgrid.com',
-      name: 'Social Network :)',
+      name: 'Tururú Team',
     },
-    subject: 'Welcome to Hack a Bos Social Network',
-    text: 'Start meeting people of your interests',
-    html: `To confirm the account <a href="${linkActivacion}">activate it here</a>`,
+    subject: 'Welcome to Tururú!',
+    text: 'We are happy to have you on board!',
+    html: `
+    Just one extra step before we begin.
+    Confirm your account by just clicking the <a href="${linkActivacion}">following link</a>
+    Thanks!
+
+    Fer  (Tururú Team)
+    `,
   };
   const data = await sendgridMail.send(msg);
   return data;

@@ -2,8 +2,8 @@ import { projectInvitationRules } from '../../../../models/validators/project-in
 import accountRepository from '../../../repositories/account-repository';
 import projectRepository from '../../../repositories/project-repository';
 import permissionsEntity from '../../../entities/permissions-entity';
+import { ActionNotAllowErr } from '../../../errors/customError';
 import validate from '../../../entities/validation-entity';
-import { NotFoundErr, ActionNotAllowErr } from '../../../errors/customError';
 
 /**
  * Gives a user access to the project.

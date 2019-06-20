@@ -1,6 +1,8 @@
 import cloudinary from 'cloudinary';
 import projectRepository from '../../../repositories/project-repository';
 import permissionsEntity from '../../../entities/permissions-entity';
+import validate from '../../../entities/validation-entity';
+import { projectIdRule } from '../../../../models/validators/project-rules';
 
 /**
  * Uploads the project banner image and adds the url to the Project instance.
@@ -10,7 +12,9 @@ import permissionsEntity from '../../../entities/permissions-entity';
  * @rules
  * - User must be owner of the project.
  */
+
 async function uploadBannerUC(uuid, projectId, file) {
+  await validate({ projectId }, projectIdRule);
   await permissionsEntity.checkAdminPermissions(uuid, projectId);
 
   cloudinary.config({

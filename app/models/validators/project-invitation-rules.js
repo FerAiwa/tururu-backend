@@ -1,14 +1,14 @@
 import Joi from 'joi';
 
-// project: String,
-// author: String,
-// sendTo: String,
-// createdAt: Date,
-// confirmedAt: Date,
-// rejectedAt: Date,
 const action = Joi.string().allow('accept', 'decline');
 const project = Joi.string().required();
-const sendTo = Joi.string().required();
+const sendTo = Joi.string().guid({ version: ['uuidv4'] }).required();
+const targetUser = Joi.string().guid({ version: ['uuidv4'] }).required();
+
+const promotionRules = {
+  project,
+  targetUser,
+};
 
 const projectInvitationRules = {
   project,
@@ -23,4 +23,6 @@ const projectInvitationAnswerRules = {
 export {
   projectInvitationRules,
   projectInvitationAnswerRules,
+  promotionRules
+
 };

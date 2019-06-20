@@ -10,7 +10,7 @@ function projectErrorHandler(err, req, res, next) {
 
   if (code === 'NOTFOUND') res.status(404).send();
 
-  if (err.context === 'auth') {
+  if (err.context === 'authentication') {
     return res.status(401).send(err);
   }
 

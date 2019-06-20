@@ -4,7 +4,11 @@ const name = Joi.string().required();
 const email = Joi.string().email({ minDomainAtoms: 2 }).required();
 const password = Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required();
 const q = Joi.string().min(3).max(128).required();
+const verificationCode = Joi.string().guid({ version: ['uuidv4'] }).required();
 
+const verificationRules = {
+  verificationCode,
+};
 
 const loginRules = {
   email, password,
@@ -20,4 +24,5 @@ export {
   loginRules,
   registerRules,
   searchUserQueryRules,
+  verificationRules,
 };

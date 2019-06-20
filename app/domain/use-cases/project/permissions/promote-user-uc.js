@@ -1,25 +1,22 @@
+import { promotionRules } from '../../../../models/validators/project-invitation-rules';
 import projectRepository from '../../../repositories/project-repository';
 import { NotFoundErr, PermissionErr } from '../../../errors/customError';
+import validate from '../../../entities/validation-entity';
 
 /**
  * Gives admin privileges to a user. Requires owner role.
  * @param {string} uuid  User uuid
  * @param {string} projectId  Project id
  * @param {string} targetUuid   Target user uuid
+ * @rules
+ * - Request must come from owner.
  */
 async function promoteUserUC({ uuid, projectId, targetUser }) {
-  /* ### Path
-    - Verify that the request comes from project owner.
-    - Check if the target user exist.
-    - Add the user to project admins-list.
- */
-  // The repo tries to execute action based on previous conditions as truth
+  await validate({ project: projectId, targetUser }, promotionRules);
+
+
   const updateSuccess = await projectRepository.addAdmin({ uuid, projectId, targetUser });
   if (!updateSuccess) {
-    /*   #### Unhappy Paths
-      - 404. Project doesn´t exist.
-      - 401. User is not project owner
-     */
     const project = await projectRepository.findProjectById(projectId);
 
     if (!project) throw NotFoundErr();

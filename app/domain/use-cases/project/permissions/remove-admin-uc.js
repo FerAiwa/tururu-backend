@@ -1,17 +1,19 @@
+import { promotionRules } from '../../../../models/validators/project-invitation-rules';
 import projectRepository from '../../../repositories/project-repository';
 import { NotFoundErr, PermissionErr, ActionNotAllowErr } from '../../../errors/customError';
+import validate from '../../../entities/validation-entity';
 
 /**
  * Revokes admin privileges from user. Requires owner role.
  * @param {string} uuid  User uuid
  * @param {string} projectId  Project id
  * @param {string} targetUuid   Target user uuid
+ * @rules
+ * - Request must come from projec towner.
  */
 async function removeAdminUC({ uuid, projectId, targetUser }) {
-  /* ### Paths
-    - Verify that the request comes from the project owner.
-    - Remove admin from the admins list.
-    */
+  await validate({ project: projectId, targetUser }, promotionRules);
+
   const project = await projectRepository.findProjectById(projectId);
   if (!project) throw NotFoundErr();
 

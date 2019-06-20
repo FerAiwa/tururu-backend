@@ -1,5 +1,8 @@
+import { projectIdRule } from '../../../../models/validators/project-rules';
 import projectRepo from '../../../repositories/project-repository';
 import { NotFoundErr, PermissionErr } from '../../../errors/customError';
+import validate from '../../../entities/validation-entity';
+
 
 /**
  * Checks if the project is accesible.
@@ -150,6 +153,7 @@ function getProjectStats(project) {
  */
 
 async function getProjectUC(uuid, projectId) {
+  await validate({ projectId }, projectIdRule);
   const project = await projectRepo.findProjectById(projectId);
 
   if (!project) throw NotFoundErr();
