@@ -12,7 +12,6 @@ import promoteUserUC from './permissions/promote-user-uc';
 import removeAdminUC from './permissions/remove-admin-uc';
 import removeUserUC from './permissions/remove-user-uc';
 import setTaskStatusUC from './task/set-task-status-uc';
-import setSprintTasks from './sprint/set-sprint-tasks-uc';
 import updateSprint from './sprint/update-sprint-uc';
 import uploadBanner from './project/upload-banner-uc';
 
@@ -31,7 +30,6 @@ const projectUC = {
 
 const sprintUC = {
   createSprint,
-  setSprintTasks,
   updateSprint,
 };
 
