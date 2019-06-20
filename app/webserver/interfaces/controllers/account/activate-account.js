@@ -8,7 +8,7 @@ async function activateAccount(req, res, next) {
   const { verification_code: verificationCode } = req.query;
   try {
     await activateAccountUC(verificationCode);
-    return res.status(200).send();
+    return res.redirect(`${process.env.SPA_START}`);
   } catch (e) {
     return next(e);
   }
