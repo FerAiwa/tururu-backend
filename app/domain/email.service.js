@@ -7,7 +7,6 @@ async function sendEmailRegistration(userEmail, verificationCode) {
   sendgridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
   const linkActivacion = `${process.env.SERVER}/account/activate?verification_code=${verificationCode}`;
-  console.log('sengrid', linkActivacion);
   const msg = {
     to: userEmail,
     from: {
@@ -17,15 +16,16 @@ async function sendEmailRegistration(userEmail, verificationCode) {
     subject: 'Welcome to Tururú!',
     text: 'We are happy to have you on board!',
     html: `
-    <p>Hello!</p>
-      Just one extra step before we begin.
-      <p> Confirm your tururú account by just clicking the <a href="${linkActivacion}">following link</a></p>
-    Thanks!
-
+    <p>Hello !</p>
+    <p> We are very glad to have you onboard...! </p>
+    Just one extra step before you can start creating your projects.
+    <p> Confirm verify your account by clicking the <a href="${linkActivacion}">following link</a> </p>
+    <p>Thanks...!</p>
     <p>Fer  <i>(Tururú Team)</i></p>
     `,
   };
   const data = await sendgridMail.send(msg);
+
   return data;
 }
 
