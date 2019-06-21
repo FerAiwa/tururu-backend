@@ -11,17 +11,18 @@ async function sendEmailRegistration(userEmail, verificationCode) {
   const msg = {
     to: userEmail,
     from: {
-      email: 'feraiwa@sendgrid.com',
+      email: 'tururu.registration@yopmail.com',
       name: 'Tururú Team',
     },
     subject: 'Welcome to Tururú!',
     text: 'We are happy to have you on board!',
     html: `
-    Just one extra step before we begin.
-    Confirm your account by just clicking the <a href="${linkActivacion}">following link</a>
+    <p>Hello!</p>
+      Just one extra step before we begin.
+      <p> Confirm your tururú account by just clicking the <a href="${linkActivacion}">following link</a></p>
     Thanks!
 
-    Fer  (Tururú Team)
+    <p>Fer  <i>(Tururú Team)</i></p>
     `,
   };
   const data = await sendgridMail.send(msg);
