@@ -26,20 +26,22 @@ async function uploadAvatarUC(uuid, file) {
   };
 
   try {
-    cloudinary.v2.uploader
-      .upload_stream(
-        avatarConfig,
-        async (err, result) => {
-          if (err) throw err; // 400 err most likely
-          const { secure_url: secureUrl } = result;
-          // Store avatar URL in the user´s account.
-          const isUserUpdated = await accountRepository
-            .setUserAvatar(uuid, secureUrl);
+    return new Promise(async (resolve) => {
+      cloudinary.v2.uploader
+        .upload_stream(
+          avatarConfig,
+          async (err, result) => {
+            if (err) throw err; // 400 err most likely
+            const { secure_url: secureUrl } = result;
+            // Store avatar URL in the user´s account.
+            const isUserUpdated = await accountRepository
+              .setUserAvatar(uuid, secureUrl);
 
-          if (!isUserUpdated) return Error('Db update failed'); // 500
-          return secureUrl;
-        }
-      ).end(file.buffer);
+            if (!isUserUpdated) return Error('Db update failed'); // 500
+            return resolve(secureUrl);
+          }
+        ).end(file.buffer);
+    });
   } catch (e) {
     throw (e);
   }

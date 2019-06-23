@@ -12,7 +12,9 @@ dotenv.config();
 // Express Middlewares & Routing
 const app = express();
 app.use(bodyParser());
-app.use(cors());
+app.use(cors({
+  exposedHeaders: 'Origin,X-requested-with,Content-type,Accept,Accept-version,Authorization,Location'
+}));
 loadRoutes(app);
 
 

@@ -25,25 +25,28 @@ async function uploadBannerUC(uuid, projectId, file) {
 
   const bannerConfig = {
     public_id: projectId,
-    resource_type: 'raw',
+    resource_type: 'image',
     width: 1200,
     height: 400,
     format: 'jpg',
     crop: 'limit',
+    gravity: 'center',
   };
 
   try {
-    cloudinary.v2.uploader
-      .upload_stream(
-        bannerConfig,
-        async (err, result) => {
-          if (err) throw err; // 401 err most likely
-          const { secure_url: secureUrl } = result;
+    return new Promise(async (resolve) => {
+      cloudinary.v2.uploader
+        .upload_stream(
+          bannerConfig,
+          async (err, result) => {
+            if (err) throw err; // 401 err most likely
+            const { secure_url: secureUrl } = result;
 
-          await projectRepository.setProjectBanner(uuid, projectId, secureUrl);
-          return secureUrl;
-        }
-      ).end(file.buffer);
+            await projectRepository.setProjectBanner(uuid, projectId, secureUrl);
+            return resolve(secureUrl);
+          }
+        ).end(file.buffer);
+    });
   } catch (e) {
     throw (e);
   }
