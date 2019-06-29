@@ -6,7 +6,7 @@ which main purpose is to show the skills adquired along the course.
 
 The open beta version of the app can be found [here](https://feraiwa.github.io/tururu)
 
-# Tech Details
+## Tech Details
 * This is an API Rest & Sockets webserver.
 * Main Techs: NodeJS, Express, MongoDB & SocketIO.
 
