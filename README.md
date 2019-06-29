@@ -18,7 +18,7 @@ some of the suggestions made by Clean Architecture.
 -> Models: (Schemas, Models & rules).
 
 
-## First officigit al release v1.0 (June 2016)
+## First public release v1.0 (June 2016)
 ### Implemented features, usable in the app:
 · Creacion of accounts, projects, tasks and work sessions.
 · Assigment of tasks.
