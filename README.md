@@ -14,7 +14,7 @@ The open beta version of the app can be found [here](https://feraiwa.github.io/t
 some of the suggestions made by Clean Architecture.
 
 The main structure is divided in: 
-- Interfaces: Controllers | Presenters. _(Receive input and config objects sent to UC and map output)._
+- Interfaces: Controllers | Presenters. _(Receive input, data mapping and output)._
 - Domain: Use Cases and Entities. _(For business logic, including validation.)_
 - Repositories. _(The data access.)_
 - Models: Schemas, Models & validation rules.
