@@ -5,7 +5,7 @@ which main purpose is to show the skills adquired along the course.
 
 The open beta version of the app can be found [here] (https://feraiwa.github.io/tururu)
 
-# Tech Details
+## Tech Details
 · This is an API Rest & Sockets webserver.
 · Main Techs: NodeJS, Express, MongoDB & SocketIO.
 
@@ -19,7 +19,7 @@ some of the suggestions made by Clean Architecture.
 
 
 ## First officigit al release v1.0 (June 2016)
-## Implemented features, usable in the app:
+### Implemented features, usable in the app:
 · Creacion of accounts, projects, tasks and work sessions.
 · Assigment of tasks.
 · Project invitation system using sockets.
