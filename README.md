@@ -39,7 +39,7 @@ The main structure is divided in:
 * Allow more kind of notifications _(right now notification = invitation)_
 
 ### Things I would like to improve in upcoming months:
-* Learn REDDIS basics and use it to store the socket connections, instead MongoDB.
+* Learn REDIS basics and use it to store the socket connections, instead MongoDB.
 * Learn and implement refresh token.
 * Implement events for week end, project accomplish.
 * Implement events for user and team rewards based on weekly activity.
