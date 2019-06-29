@@ -3,7 +3,7 @@ This is the backend for Tururú App, a task manager with cooperative options, ti
 Right now this is a MVP with basic functionality, a personal project made for Hack a Bos Full-Stack Bootcamp
 which main purpose is to show the skills adquired along the course.
 
-The open beta version of the app can be found [here] (https://feraiwa.github.io/tururu)
+The open beta version of the app can be found at https://feraiwa.github.io/tururu
 
 ## Tech Details
 · This is an API Rest & Sockets webserver.
