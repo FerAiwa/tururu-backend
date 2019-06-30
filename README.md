@@ -31,6 +31,7 @@ The main structure is divided in:
 
 
 ### Things I will improve for the next release:
+* Learn Jest and have a 20% increase of test coverage of the use cases.
 * Fix the more complex analytics recovered after project load.
 * Better flow of the work session end. Stop after disconection.
 * Refactor of the socket implementation.
