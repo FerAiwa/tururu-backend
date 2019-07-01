@@ -20,7 +20,7 @@ The main structure is divided in:
 - Models: Schemas, Models & validation rules.
 
 
-## First public release v1.0 (June 2016)
+## First public release v1.0 (June 2019)
 
 ## Implemented features, usable in the app:
 * Creacion of accounts, projects, tasks and work sessions.
