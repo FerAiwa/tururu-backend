@@ -68,8 +68,17 @@ async function login(email, password) {
     await accountRepository.resetUserLoginLimiters(uuid);
   }
 
+  //Special: Long-lasting token for account testing using lighthouse audits (Web Core Vitals, frontend).
+  if(user.email === 'fer.aiwa@gmail.com') {
+    return {
+      accessToken: jwt.sign({ uuid }, process.env.WEBTOKEN_SECRET, { expiresIn: '360d' }),
+      email: user.email,
+      uuid,
+    };
+  }
+
   return {
-    accessToken: jwt.sign({ uuid }, process.env.WEBTOKEN_SECRET, { expiresIn: '1h' }),
+    accessToken: jwt.sign({ uuid }, process.env.WEBTOKEN_SECRET, { expiresIn: '24h' }),
     email: user.email,
     uuid,
   };
